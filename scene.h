@@ -39,12 +39,18 @@ class Scene
 		void draw_objects();
 
 		//Callback functions
+		void motion_func(int x, int y);
 		/*void keyboard(unsigned char key, int x, int y);
 		void animate(GLint time);
 		void reshape(int width, int height);*/
 
 	private:
 		Cube cube;
+		mat4 transform;
+		float rotX;
+		float rotY;
+		float rotZ;
+
 
 		/*vec4 light_position_field;	//position of the light
 		vec4 light_ambient_field;		//ambient light

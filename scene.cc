@@ -19,6 +19,10 @@
 
 Scene::Scene()
 {
+	rotX = 0.0;
+	rotY = 0.0;
+	rotZ = 0.0;
+
 	//Lighting properties
 	/*light_position_field = vec4(0.0, 6.0, 6.0, 0.0);
 	light_diffuse_field = vec4(1.0, 1.0, 1.0, 1.0);
@@ -80,8 +84,42 @@ void Scene::load_objects()
 void Scene::draw_objects()
 {
 	//vec4 ambient_product, diffuse_product, specular_product;
-	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, Translate(0.0, 0.0, 0.0));
+	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, transform);
 	cube.draw();
+}
+
+void Scene::motion_func(int x, int y)
+{
+	static vec2 previous;
+	static bool first = true;
+
+	y = 800 - y;
+
+	if (first)
+	{
+		previous = vec2((float)x, (float)y);
+		first = false;
+	}
+
+	//std::cout << "previous = " << previous << std::endl;
+
+	vec2 angle = previous - vec2(x, y);
+
+	//std::cout << "angle = " << angle << std::endl;
+
+	rotX += 2.0 * cos(angle.x) * sin(angle.y);
+	rotY += 2.0 * sin(angle.x) * sin(angle.y);
+	rotZ += 2.0 * sin(angle.y);
+
+	std::cout << rotX << " , " << rotY << " , " << rotZ << std::endl;
+
+	transform = RotateZ(rotZ) * 
+				RotateY(rotY) * 
+				RotateX(rotX);
+
+	glutPostRedisplay();
+
+	previous = vec2(x, y);
 }
 
 /*void Scene::keyboard(unsigned char key, int x, int y)

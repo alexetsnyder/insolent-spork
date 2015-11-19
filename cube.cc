@@ -82,10 +82,10 @@ void Cube::create_vertices()
 	rectangle(4, 5, 6, 7);
 	rectangle(5, 4, 0, 1);
 
-	for (int i = 0; i < 8; ++i)
+	/*for (int i = 0; i < 8; ++i)
 	{
 		std::cout << "normal " << i << " = " << DATA.normals[i*4] << std::endl;
-	}
+	}*/
 
 	//glBufferSubData(GL_ARRAY_BUFFER, BUFFER_LOC * sizeof(vec3), sizeof(points), points);
 }

@@ -30,6 +30,11 @@ void init()
 	glClearColor(0.53, 0.80, 0.92, 1.0);	
 }
 
+extern "C" void motion_func(int x, int y)
+{
+	scene.motion_func(x, y);
+}
+
 /*extern "C" void keyboard(unsigned char key, int x, int y)
 {
 	scene.keyboard(key, x, y);
@@ -81,6 +86,7 @@ int main(int argc, char** argv)
 /*	glutReshapeFunc(reshape); 
 	glutKeyboardFunc(keyboard);
 	glutIdleFunc(idle);*/
+	glutMotionFunc(motion_func);
 	glutDisplayFunc(display);
 
 	glutMainLoop();
