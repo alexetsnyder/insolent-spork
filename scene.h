@@ -23,6 +23,7 @@
 #include <string>
 //#include <vector>
 #include "Angel.h"
+#include "cube.h"
 
 class Scene
 {
@@ -43,16 +44,18 @@ class Scene
 		void reshape(int width, int height);*/
 
 	private:
-		/*vec4 light_position_field;		//position of the light
+		Cube cube;
+
+		/*vec4 light_position_field;	//position of the light
 		vec4 light_ambient_field;		//ambient light
 		vec4 light_diffuse_field;		//diffuse light
-		vec4 light_specular_field;*/		//specular light
+		vec4 light_specular_field;*/	//specular light
 
 		//GLuint camera_mv_loc;			//Location of model_view uniform
 		GLuint object_mv_loc;			//Objects model_view uniform
-		//GLuint projection_loc;			//Location of projection uniform
+		//GLuint projection_loc;		//Location of projection uniform
 
-		/*GLuint ambient_product_loc;		//location of ambient product uniform
+		/*GLuint ambient_product_loc;	//location of ambient product uniform
 		GLuint diffuse_product_loc;		//location of diffuse product uniform
 		GLuint specular_product_loc;	//location of specular product uniform
 		GLuint light_position_loc;		//location of light position uniform
@@ -62,6 +65,7 @@ class Scene
 		GLuint vao;						//vertex array object
 		GLuint buffer;					//buffer object to send data
 		GLuint loc;						//Location of vao
+		GLuint normal_loc;				//Location of Normals in vao
 };
 
 #endif

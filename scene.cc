@@ -43,7 +43,12 @@ void Scene::init(std::string vshader, std::string fshader, std::string position)
 	//Get location of vao 
 	loc = glGetAttribLocation(program, position.c_str());
 	glEnableVertexAttribArray(loc);
-	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+	glVertexAttribPointer(loc, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+
+	normal_loc = glGetAttribLocation(program, "vNormal");
+	glEnableVertexAttribArray(normal_loc);
+	glVertexAttribPointer(normal_loc, 3, GL_FLOAT, GL_FALSE, 0, 
+						  BUFFER_OFFSET(Geometry::NUM_POINTS*sizeof(vec4)));
 
 	//camera_mv_loc = glGetUniformLocation(program, "camera_mv");
 
@@ -64,18 +69,25 @@ void Scene::init(std::string vshader, std::string fshader, std::string position)
 
 void Scene::load_objects()
 {
-	glBufferData(GL_ARRAY_BUFFER, Object::num_points * sizeof(vec3), NULL, GL_STATIC_DRAW);
+
+	glBufferData(GL_ARRAY_BUFFER, Geometry::NUM_POINTS*sizeof(vec4) + 
+				 Geometry::NUM_NORMALS*sizeof(vec3), NULL, GL_STATIC_DRAW);
+
+	cube.SEND_FLAG = true;
+	cube.init();
 }
 
 void Scene::draw_objects()
 {
 	//vec4 ambient_product, diffuse_product, specular_product;
+	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, Translate(0.0, 0.0, 0.0));
+	cube.draw();
 }
 
-void Scene::keyboard(unsigned char key, int x, int y)
+/*void Scene::keyboard(unsigned char key, int x, int y)
 {
 	//
-}
+}*/
 
 /*void Scene::reshape(int width, int height)
 {

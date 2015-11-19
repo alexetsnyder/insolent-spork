@@ -1,18 +1,18 @@
 attribute vec4 vPosition;
+attribute vec3 vNormal;
 
 varying vec4 fColor;
 
-uniform vec4 AmbientProduct, DiffuseProduct, SpecularProduct;
-uniform mat4 camera_mv;
+/*uniform vec4 AmbientProduct, DiffuseProduct, SpecularProduct;
+uniform mat4 camera_mv;*/
 uniform mat4 object_mv;
-uniform mat4 projection;
+/*uniform mat4 projection;
 uniform vec4 LightPosition;
-uniform float Shininess;
-uniform vec3 vNormal;
+uniform float Shininess;*/
 
 void main()
 {
-    mat4 model_view = camera_mv * object_mv;
+    /* mat4 model_view = camera_mv * object_mv;
 
 
     // Transform vertex  position into eye coordinates
@@ -46,5 +46,8 @@ void main()
     gl_Position = projection*model_view*vPosition;
 
     fColor = ambient + diffuse + specular;
-    fColor.a = 1.0;
+    fColor.a = 1.0;*/
+
+    gl_Position = object_mv * vPosition;
+    fColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

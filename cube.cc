@@ -11,97 +11,94 @@
 //                                                                    
 //  Description: Implements the cube class            
 //                                                                    
-//  Date:        November 9, 2015
+//  Date:        Dec 9, 2015
 //                                                                    
 //*******************************************************************
 
 #include "cube.h"
 
+const int Cube::SIZE = 24;
+bool Cube::INIT_DATA = false;
+bool Cube::POINTS_SENT = false;
+int Cube::BUFFER_PLOC = 0;
+int Cube::BUFFER_NLOC = 0;
+cube_data Cube::DATA;
+const vec4 Cube::VERTICES[8] = {
+			vec4(-0.5, -0.5,  0.5, 1.0),
+			vec4(-0.5,  0.5,  0.5, 1.0),
+			vec4( 0.5,  0.5,  0.5, 1.0),
+			vec4( 0.5, -0.5,  0.5, 1.0),
+			vec4(-0.5, -0.5, -0.5, 1.0),
+			vec4(-0.5,  0.5, -0.5, 1.0),
+			vec4( 0.5,  0.5, -0.5, 1.0),
+			vec4( 0.5, -0.5, -0.5, 1.0)
+		};
+
+
 Cube::Cube()
 {
-	//
+	if (!INIT_DATA)
+	{
+		DATA.index = 0;
+		create_vertices();
+
+		BUFFER_NLOC = NUM_NORMALS;
+		NUM_NORMALS += SIZE;
+		BUFFER_PLOC = NUM_POINTS;
+		NUM_POINTS += SIZE;
+
+		INIT_DATA = true;
+	}
 }
 
 void Cube::init()
 {
-	send_vertices();
+	if (!POINTS_SENT && SEND_FLAG)
+	{
+		glBufferSubData(GL_ARRAY_BUFFER, BUFFER_PLOC * sizeof(vec4),
+		 				sizeof(DATA.points), DATA.points);
+		glBufferSubData(GL_ARRAY_BUFFER, NUM_POINTS*sizeof(vec4) + BUFFER_NLOC*sizeof(vec3), 
+						sizeof(DATA.normals), DATA.normals);
 
+		POINTS_SENT = true;
+		SEND_FLAG = false;
+	}
 }
 
-void Cube::draw_geometry()
+void Cube::draw()
 {
 	for (int i = 0; i < 6; ++i)
 	{
-		glDrawArrays(GL_TRIANGLE_FAN, place + i * 4, 4);
+		glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC + i * 4, 4);
 	}
 }
 
-void Cube::send_vertices()
+void Cube::create_vertices()
 {
-	if (!data_sent)
+	rectangle(1, 0, 3, 2);
+	rectangle(2, 3, 7, 6);
+	rectangle(3, 0, 4, 7);
+	rectangle(6, 5, 1, 2);
+	rectangle(4, 5, 6, 7);
+	rectangle(5, 4, 0, 1);
+
+	for (int i = 0; i < 8; ++i)
 	{
-		vec3 points[SIZE];
-		vec3 normals[SIZE];
-		vec3 start = vec3(-0.5, -0.5, -0.5);
-
-		draw_square(points, 0, start, XY_PLANE);
-		fill_normals(points, normals, 0, true);
-		draw_square(points, 4, start, XZ_PLANE);
-		fill_normals(points, normals, 4, true);
-		draw_square(points, 8, start, YZ_PLANE);
-		fill_normals(points, normals, 8, true);
-
-		draw_square(points, 12, vec3(start.x, start.y + 1.0, start.z), XZ_PLANE);
-		fill_normals(points, normals, 12, false);
-		draw_square(points, 16, vec3(start.x, start.y, start.z + 1.0), XY_PLANE);
-		fill_normals(points, normals, 16, false);
-		draw_square(points, 20, vec3(start.x + 1.0, start.y, start.z), YZ_PLANE);
-		fill_normals(points, normals, 20, false);
-
-		glBufferSubData(GL_ARRAY_BUFFER, place * sizeof(vec3), sizeof(points), points);
-
-		data_sent = true;
+		std::cout << "normal " << i << " = " << DATA.normals[i*4] << std::endl;
 	}
+
+	//glBufferSubData(GL_ARRAY_BUFFER, BUFFER_LOC * sizeof(vec3), sizeof(points), points);
 }
 
-void Cube::rectangle(vec3 points[], int index, vec3 point, plane p)
+void Cube::rectangle(int i, int j, int k, int l)
 {
-	if (p == XY_PLANE)
-	{
-		points[index] = point;
-		points[++index] = vec3(point.x, point.y + 1.0, point.z);
-		points[++index] = vec3(point.x + 1.0, point.y + 1.0, point.z);
-		points[++index] = vec3(point.x + 1.0, point.y, point.z);
-	}
-	else if (p == XZ_PLANE)
-	{
-		points[index] = point;
-		points[++index] = vec3(point.x, point.y, point.z + 1.0);
-		points[++index] = vec3(point.x + 1.0, point.y, point.z + 1.0);
-		points[++index] = vec3(point.x + 1.0, point.y, point.z);
-	}
-	else
-	{
-		points[index] = point;
-		points[++index] = vec3(point.x, point.y, point.z + 1.0);
-		points[++index] = vec3(point.x, point.y + 1.0, point.z + 1.0);
-		points[++index] = vec3(point.x, point.y + 1.0, point.z);
-	}
-}
+	vec4 u = VERTICES[j] - VERTICES[i];
+	vec4 v = VERTICES[k] - VERTICES[j];
+	vec3 normal = normalize(cross(u, v));
 
-void Cube::fill_normals(vec3 points[], vec3 normals[], int index, int inv)
-{
-	vec3 normal = normalize(cross(points[index+1] - points[index], points[index+2] - points[index+1]));
-	if (inv)
-	{
-		normal.x = (normal.x == 0) ? normal.x : normal.x * -1;
-		normal.y = (normal.y == 0) ? normal.y : normal.y * -1;
-		normal.z = (normal.z == 0) ? normal.z : normal.z * -1;
-	}
-	
-	for (int i = index; i < index+4; ++i)
-	{
-		normals[i] = normal;
-	}
+	DATA.normals[DATA.index] = normal; DATA.points[DATA.index] = VERTICES[i];
+	DATA.normals[++DATA.index] = normal; DATA.points[DATA.index] =  VERTICES[j];
+	DATA.normals[++DATA.index] = normal; DATA.points[DATA.index] =  VERTICES[k];
+	DATA.normals[++DATA.index] = normal; DATA.points[DATA.index] =  VERTICES[l];
+	++DATA.index;
 }
-

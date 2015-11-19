@@ -2,7 +2,7 @@
 include C:\Users\library\Makefile.defs
 #include /home/cs425/code-egs/Makefile.defs 
 
-OBJECTS = main.o scene.o 
+OBJECTS = main.o scene.o geometry.o cube.o
 
 all: bsur clean
 
@@ -14,6 +14,12 @@ main.o: main.cc
 
 scene.o: scene.h scene.cc 
 	$(CC) -c $(OPTIONS) scene.cc
+
+geometry.o: geometry.h geometry.cc
+	$(CC) -c $(OPTIONS) geometry.cc
+
+cube.o: cube.h cube.cc
+	$(CC) -c $(OPTIONS) cube.cc
 
 clean:
 	rm *.o
