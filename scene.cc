@@ -1,6 +1,6 @@
 //******************************************************************* 
 //                                                                    
-//  Program:     3D Roller Coaster                                       
+//  Program:     Survival Game                                       
 //      
 //	File:		 scene.cc
 //                                                               
@@ -11,23 +11,37 @@
 //                                                                    
 //  Description: Implements the Scene class             
 //                                                                    
-//  Date:        November 9, 2015
+//  Date:        December 9, 2015
 //                                                                    
 //*******************************************************************
 
 #include "scene.h"
 
-Scene::Scene()
+Scene::Scene(int width, int height)
 {
 	rotX = 0.0;
 	rotY = 0.0;
-	rotZ = 0.0;
+
+	transform = Translate(0.0, 0.0, 0.0);
+
+	vec4 ambient(0.3, 0.3, 0.3, 1.0);
+	vec4 specular(1.0, 0.0, 0.0, 1.0);
+	vec4 diffuse(0.4, 0.0, 0.0, 1.0);
+	float shininess = 100.0;
+	cube.set_lighting(ambient, diffuse, specular, shininess);
+
+	vec4 eye(0.0, 0.0, 8.0, 1.0);
+	vec4 at(0.0, 0.0, 0.0, 1.0);
+	vec4 up(0.0, 1.0, 0.0, 0.0);
+	camera.set_model_view(eye, at, up);
+
+	camera.set_projection(45.0, width/(float)height, 0.1, 10.0);
 
 	//Lighting properties
-	/*light_position_field = vec4(0.0, 6.0, 6.0, 0.0);
+	light_position_field = vec4(0.0, 10.0, 0.0, 0.0);
 	light_diffuse_field = vec4(1.0, 1.0, 1.0, 1.0);
 	light_specular_field = vec4(1.0, 1.0, 1.0, 1.0);
-	light_ambient_field = vec4(0.4, 0.4, 0.4, 1.0);*/
+	light_ambient_field = vec4(0.4, 0.4, 0.4, 1.0);
 }
 
 void Scene::init(std::string vshader, std::string fshader, std::string position)
@@ -54,11 +68,11 @@ void Scene::init(std::string vshader, std::string fshader, std::string position)
 	glVertexAttribPointer(normal_loc, 3, GL_FLOAT, GL_FALSE, 0, 
 						  BUFFER_OFFSET(Geometry::NUM_POINTS*sizeof(vec4)));
 
-	//camera_mv_loc = glGetUniformLocation(program, "camera_mv");
+	camera_mv_loc = glGetUniformLocation(program, "camera_mv");
 
 	object_mv_loc = glGetUniformLocation(program, "object_mv");
 
-	/*projection_loc = glGetUniformLocation(program, "projection");
+	projection_loc = glGetUniformLocation(program, "projection");
 
 	ambient_product_loc = glGetUniformLocation(program, "AmbientProduct");
 
@@ -68,7 +82,7 @@ void Scene::init(std::string vshader, std::string fshader, std::string position)
 
 	light_position_loc = glGetUniformLocation(program, "LightPosition");
 
-	shininess_loc = glGetUniformLocation(program, "Shininess");*/
+	shininess_loc = glGetUniformLocation(program, "Shininess");
 }
 
 void Scene::load_objects()
@@ -83,8 +97,23 @@ void Scene::load_objects()
 
 void Scene::draw_objects()
 {
-	//vec4 ambient_product, diffuse_product, specular_product;
+	vec4 ambient_product, diffuse_product, specular_product;
+
+	//Camera and light positiong
+	glUniformMatrix4fv(camera_mv_loc, 1, GL_TRUE, camera.get_model_view());
+	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, camera.get_projection());
+	glUniform4fv(light_position_loc, 1, light_position_field);
+
+	//Lighting for cube
+	ambient_product = light_ambient_field * cube.ambient();
+	diffuse_product = light_diffuse_field *  cube.diffuse();
+	specular_product = light_specular_field * cube.specular();
+
+	glUniform4fv(ambient_product_loc, 1, ambient_product);
+	glUniform4fv(diffuse_product_loc, 1, diffuse_product);
+	glUniform4fv(specular_product_loc, 1, specular_product);
 	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, transform);
+	glUniform1f(shininess_loc, cube.shininess());	
 	cube.draw();
 }
 
@@ -93,29 +122,19 @@ void Scene::motion_func(int x, int y)
 	static vec2 previous;
 	static bool first = true;
 
-	y = 800 - y;
-
 	if (first)
 	{
 		previous = vec2((float)x, (float)y);
 		first = false;
 	}
 
-	//std::cout << "previous = " << previous << std::endl;
-
 	vec2 angle = previous - vec2(x, y);
 
-	//std::cout << "angle = " << angle << std::endl;
+	rotX += angle.x;
+	rotY += angle.y;
 
-	rotX += 2.0 * cos(angle.x) * sin(angle.y);
-	rotY += 2.0 * sin(angle.x) * sin(angle.y);
-	rotZ += 2.0 * sin(angle.y);
-
-	std::cout << rotX << " , " << rotY << " , " << rotZ << std::endl;
-
-	transform = RotateZ(rotZ) * 
-				RotateY(rotY) * 
-				RotateX(rotX);
+	transform = RotateY(rotX) * 
+				RotateX(rotY);
 
 	glutPostRedisplay();
 
@@ -127,14 +146,14 @@ void Scene::motion_func(int x, int y)
 	//
 }*/
 
-/*void Scene::reshape(int width, int height)
+void Scene::reshape(int width, int height)
 {
 	//adjust viewport and clear
 	glViewport(0, 0, width, height);
 
 	//set class variables
-	window_width = width;
-	window_height = height;
+	/*window_width = width;
+	window_height = height;*/
 
 	//Send to vertex shader
 	//glUniform2f(window_size_loc, width, height);
@@ -144,4 +163,4 @@ void Scene::motion_func(int x, int y)
 
 	//Redisplay 
 	glutPostRedisplay();
-}*/
+}

@@ -19,7 +19,7 @@
 #include "scene.h"
 
 //The class that controls the game.
-Scene scene;
+Scene scene(800, 800);
 
 void init()
 {
