@@ -35,10 +35,15 @@ extern "C" void motion_func(int x, int y)
 	scene.motion_func(x, y);
 }
 
+extern "C" void mouse_click(int button, int state, int x, int y)
+{
+	scene.mouse_click(button, state, x, y);
+}
+
 /*extern "C" void keyboard(unsigned char key, int x, int y)
 {
 	scene.keyboard(key, x, y);
-}
+}*/
 
 extern "C" void reshape(int width, int height)
 {
@@ -49,12 +54,12 @@ extern "C" void idle()
 {
 	static GLint time = glutGet(GLUT_ELAPSED_TIME);
 
-	scene.animate(time);
+	scene.idle_move_trackball();
 
 	time = glutGet(GLUT_ELAPSED_TIME);
 	glutPostRedisplay();
 }
-*/
+
 //Display function for glut callback display
 extern "C" void display()
 {
@@ -83,10 +88,11 @@ int main(int argc, char** argv)
 	init();
 
 	//Glut callback functions
-/*	glutReshapeFunc(reshape); 
-	glutKeyboardFunc(keyboard);
-	glutIdleFunc(idle);*/
+    glutReshapeFunc(reshape); 
+	//glutKeyboardFunc(keyboard);
+	glutIdleFunc(idle);
 	glutMotionFunc(motion_func);
+	glutMouseFunc(mouse_click);
 	glutDisplayFunc(display);
 
 	glutMainLoop();

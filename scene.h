@@ -21,9 +21,18 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <math.h>
 #include "Angel.h"
 #include "camera.h"
 #include "cube.h"
+
+struct track_ball
+{
+	bool track_ball_on;
+	int last_x, last_y;
+	int current_x, current_y;
+};
 
 class Scene
 {
@@ -39,18 +48,23 @@ class Scene
 		void draw_objects();
 
 		//Callback functions
-		void motion_func(int x, int y);
-		/*void keyboard(unsigned char key, int x, int y);
-		void animate(GLint time);*/
 		void reshape(int width, int height);
+		//Virtual Trackball functions
+		void motion_func(int x, int y);
+		void mouse_click(int button, int state, int x, int y);
+		vec3 get_trackball_vector(int x, int y);
+		void idle_move_trackball();
+		/*void keyboard(unsigned char key, int x, int y);*/
 
 	private:
 		Camera camera;					//The camera
+		track_ball track_field;			//The virtual trackball
 
 		Cube cube;
 		mat4 transform;
-		float rotX;
-		float rotY;
+
+		int window_width;				//the window width
+		int window_height;				//the window height
 
 		vec4 light_position_field;		//position of the light
 		vec4 light_ambient_field;		//ambient light
@@ -73,5 +87,9 @@ class Scene
 		GLuint loc;						//Location of vao
 		GLuint normal_loc;				//Location of Normals in vao
 };
+
+//http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
+//Not made by me, On blog by Neil Mendoza
+mat4 rotationMatrix(vec3 axis, float angle);
 
 #endif

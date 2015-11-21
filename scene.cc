@@ -19,8 +19,14 @@
 
 Scene::Scene(int width, int height)
 {
-	rotX = 0.0;
-	rotY = 0.0;
+	window_width = width;
+	window_height = height;
+
+	track_field.track_ball_on = false;
+	track_field.last_x = 0;
+	track_field.last_y = 0;
+	track_field.current_x = 0;
+	track_field.current_y = 0;
 
 	transform = Translate(0.0, 0.0, 0.0);
 
@@ -117,29 +123,80 @@ void Scene::draw_objects()
 	cube.draw();
 }
 
+//https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
+//http://web.cse.ohio-state.edu/~hwshen/781/Site/Slides_files/trackball.pdf
 void Scene::motion_func(int x, int y)
 {
-	static vec2 previous;
-	static bool first = true;
-
-	if (first)
+	if(track_field.track_ball_on)
 	{
-		previous = vec2((float)x, (float)y);
-		first = false;
+		track_field.current_x = x;
+		track_field.current_y = y;
 	}
-
-	vec2 angle = previous - vec2(x, y);
-
-	rotX += angle.x;
-	rotY += angle.y;
-
-	transform = RotateY(rotX) * 
-				RotateX(rotY);
-
-	glutPostRedisplay();
-
-	previous = vec2(x, y);
 }
+
+void Scene::mouse_click(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		track_field.track_ball_on = true;
+		track_field.last_x = track_field.current_x = x;
+		track_field.last_y = track_field.current_y = y;
+	}
+	else
+	{
+		track_field.track_ball_on = false;
+	}
+}
+
+vec3 Scene::get_trackball_vector(int x, int y)
+{
+	//Convert to [-1, 1] coordinates
+	vec3 P = vec3(1.0*x/window_width*2.0 - 1.0, 
+				  1.0*y/window_height*2.0 - 1.0,
+				  0);
+	P.y = -P.y;		//Invert y since screen y is inverted
+
+	float op_squared = P.x * P.x + P.y * P.y;
+	if (op_squared <= 1.0)
+	{
+		P.z = sqrt(1.0 - op_squared);
+	}
+	else
+	{
+		P = normalize(P);
+	}
+	return P;
+}
+
+void Scene::idle_move_trackball()
+{
+	if (track_field.last_x != track_field.current_x &&
+		track_field.last_y != track_field.current_y)
+	{
+		vec3 p1 = get_trackball_vector(track_field.last_x, track_field.last_y);
+		vec3 p2 = get_trackball_vector(track_field.current_x, track_field.current_y);
+		float angle = acos(std::min(1.0f, (float)dot(p1, p2)));
+		vec3 axis = cross(p1, p2);
+		camera.eye() = rotationMatrix(axis, angle) * camera.eye();
+		std::cout << "camera.eye() = " << camera.eye() << std::endl;
+	}
+}
+
+//http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
+//Not made by me, On blog by Neil Mendoza
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+    
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+//End of copied code
 
 /*void Scene::keyboard(unsigned char key, int x, int y)
 {
@@ -152,8 +209,8 @@ void Scene::reshape(int width, int height)
 	glViewport(0, 0, width, height);
 
 	//set class variables
-	/*window_width = width;
-	window_height = height;*/
+	window_width = width;
+	window_height = height;
 
 	//Send to vertex shader
 	//glUniform2f(window_size_loc, width, height);
