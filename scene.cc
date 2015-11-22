@@ -41,7 +41,7 @@ Scene::Scene(int width, int height)
 	vec4 up(0.0, 1.0, 0.0, 0.0);
 	camera.set_model_view(eye, at, up);
 
-	camera.set_projection(45.0, width/(float)height, 0.1, 10.0);
+	camera.set_projection(45.0, width/(float)height, 0.5, 10.0);
 
 	//Lighting properties
 	light_position_field = vec4(0.0, 10.0, 0.0, 0.0);
@@ -170,7 +170,7 @@ vec3 Scene::get_trackball_vector(int x, int y)
 
 void Scene::idle_move_trackball()
 {
-	if (track_field.last_x != track_field.current_x &&
+	/*if (track_field.last_x != track_field.current_x &&
 		track_field.last_y != track_field.current_y)
 	{
 		vec3 p1 = get_trackball_vector(track_field.last_x, track_field.last_y);
@@ -179,7 +179,7 @@ void Scene::idle_move_trackball()
 		vec3 axis = cross(p1, p2);
 		camera.eye() = rotationMatrix(axis, angle) * camera.eye();
 		std::cout << "camera.eye() = " << camera.eye() << std::endl;
-	}
+	}*/
 }
 
 //http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/

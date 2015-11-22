@@ -88,11 +88,11 @@ int main(int argc, char** argv)
 	init();
 
 	//Glut callback functions
-    glutReshapeFunc(reshape); 
+        glutReshapeFunc(reshape); 
 	//glutKeyboardFunc(keyboard);
-	glutIdleFunc(idle);
-	glutMotionFunc(motion_func);
-	glutMouseFunc(mouse_click);
+	//glutIdleFunc(idle);
+	//glutMotionFunc(motion_func);
+	//glutMouseFunc(mouse_click);
 	glutDisplayFunc(display);
 
 	glutMainLoop();
