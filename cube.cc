@@ -55,11 +55,12 @@ void Cube::init()
 {
 	if (!POINTS_SENT && SEND_FLAG)
 	{
+		std::cout << "PLOC = " << BUFFER_PLOC << " NLOC = " << BUFFER_NLOC << std::endl;
+		
 		glBufferSubData(GL_ARRAY_BUFFER, BUFFER_PLOC * sizeof(vec4),
 		 				sizeof(DATA.points), DATA.points);
 		glBufferSubData(GL_ARRAY_BUFFER, NUM_POINTS*sizeof(vec4) + BUFFER_NLOC*sizeof(vec3), 
 						sizeof(DATA.normals), DATA.normals);
-
 		POINTS_SENT = true;
 		SEND_FLAG = false;
 	}
@@ -67,10 +68,11 @@ void Cube::init()
 
 void Cube::draw()
 {
-	for (int i = 0; i < 6; ++i)
+	glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC, SIZE);
+	/*for (int i = 0; i < 6; ++i)
 	{
 		glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC + i * 4, 4);
-	}
+	}*/
 }
 
 void Cube::create_vertices()

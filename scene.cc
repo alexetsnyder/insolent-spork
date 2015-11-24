@@ -42,8 +42,8 @@ Scene::Scene(int width, int height)
 	vec4 up(0.0, 1.0, 0.0, 0.0);
 	camera.set_model_view(eye, at, up);*/
 
-	camera.set_model_view(Translate(0.0, 0.0, -8.0));
-	camera.set_projection(45.0, width/(float)height, 0.5, 10.0);
+	camera.set_model_view(Translate(0.0, 0.0, -2.0));
+	camera.set_projection(45.0, width/(float)height, 0.1, 100.0);
 
 	//Lighting properties
 	light_position_field = vec4(0.0, 0.0, 8.0, 0.0);
@@ -181,6 +181,7 @@ void Scene::idle_move_trackball()
 		vec3 axis = cross(p1, p2);
 		track_field.angle += angle;
 		camera.set_model_view(Translate(0.0, 0.0, -8.0) * rotationMatrix(axis,track_field.angle));
+		std::cout << "Idle function is running...\n";
 	}
 }
 

@@ -18,7 +18,7 @@ void main()
 	//If light is nearby calculate the direction per fragment
 	if (LightPosition.w != 0.0)
 	{
-		L = normalize(L - E);
+		L = normalize(fL - fE);
 	}
 
 	vec3 R = reflect(L, N);
@@ -31,7 +31,7 @@ void main()
 	vec4 specular = ks*SpecularProduct;
 
 	//Discard specular light if the light is behind the vertex
-	if (dot(fL, fN) < 0.0)
+	if (dot(L, N) < 0.0)
 	{
 		specular = vec4(0.0, 0.0, 0.0, 0.0);
 	}

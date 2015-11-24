@@ -58,14 +58,14 @@ class Scene
 		/*void keyboard(unsigned char key, int x, int y);*/
 
 	private:
-		Camera camera;					//The camera
+		Camera camera;				//The camera
 		track_ball track_field;			//The virtual trackball
 
 		Cube cube;
 		mat4 transform;
 
-		int window_width;				//the window width
-		int window_height;				//the window height
+		int window_width;			//the window width
+		int window_height;			//the window height
 
 		vec4 light_position_field;		//position of the light
 		vec4 light_ambient_field;		//ambient light
