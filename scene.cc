@@ -27,6 +27,7 @@ Scene::Scene(int width, int height)
 	track_field.last_y = 0;
 	track_field.current_x = 0;
 	track_field.current_y = 0;
+	track_field.angle = 0.0;
 
 	transform = Translate(0.0, 0.0, 0.0);
 
@@ -36,15 +37,16 @@ Scene::Scene(int width, int height)
 	float shininess = 100.0;
 	cube.set_lighting(ambient, diffuse, specular, shininess);
 
-	vec4 eye(0.0, 0.0, 8.0, 1.0);
+	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
 	vec4 at(0.0, 0.0, 0.0, 1.0);
 	vec4 up(0.0, 1.0, 0.0, 0.0);
-	camera.set_model_view(eye, at, up);
+	camera.set_model_view(eye, at, up);*/
 
+	camera.set_model_view(Translate(0.0, 0.0, -8.0));
 	camera.set_projection(45.0, width/(float)height, 0.5, 10.0);
 
 	//Lighting properties
-	light_position_field = vec4(0.0, 10.0, 0.0, 0.0);
+	light_position_field = vec4(0.0, 0.0, 8.0, 0.0);
 	light_diffuse_field = vec4(1.0, 1.0, 1.0, 1.0);
 	light_specular_field = vec4(1.0, 1.0, 1.0, 1.0);
 	light_ambient_field = vec4(0.4, 0.4, 0.4, 1.0);
@@ -170,16 +172,16 @@ vec3 Scene::get_trackball_vector(int x, int y)
 
 void Scene::idle_move_trackball()
 {
-	/*if (track_field.last_x != track_field.current_x &&
+	if (track_field.last_x != track_field.current_x &&
 		track_field.last_y != track_field.current_y)
 	{
 		vec3 p1 = get_trackball_vector(track_field.last_x, track_field.last_y);
 		vec3 p2 = get_trackball_vector(track_field.current_x, track_field.current_y);
-		float angle = acos(std::min(1.0f, (float)dot(p1, p2)));
+		float angle = -acos(std::min(1.0f, (float)dot(p1, p2)));
 		vec3 axis = cross(p1, p2);
-		camera.eye() = rotationMatrix(axis, angle) * camera.eye();
-		std::cout << "camera.eye() = " << camera.eye() << std::endl;
-	}*/
+		track_field.angle += angle;
+		camera.set_model_view(Translate(0.0, 0.0, -8.0) * rotationMatrix(axis,track_field.angle));
+	}
 }
 
 //http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/

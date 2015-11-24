@@ -32,6 +32,7 @@ struct track_ball
 	bool track_ball_on;
 	int last_x, last_y;
 	int current_x, current_y;
+	float angle;
 };
 
 class Scene
