@@ -1,6 +1,6 @@
 #Makefile for the 3D Roller Coaster project
-#include C:\Users\library\Makefile.defs
-include /home/cs425/code-egs/Makefile.defs 
+include C:\Users\library\Makefile.defs
+#include /home/cs425/code-egs/Makefile.defs 
 
 OBJECTS = main.o scene.o geometry.o cube.o camera.o
 

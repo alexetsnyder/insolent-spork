@@ -68,11 +68,11 @@ void Cube::init()
 
 void Cube::draw()
 {
-	glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC, SIZE);
-	/*for (int i = 0; i < 6; ++i)
+	//glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC, SIZE);
+	for (int i = 0; i < 6; ++i)
 	{
 		glDrawArrays(GL_TRIANGLE_FAN, BUFFER_PLOC + i * 4, 4);
-	}*/
+	}
 }
 
 void Cube::create_vertices()
