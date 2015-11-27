@@ -19,6 +19,9 @@
 
 Scene::Scene(int width, int height)
 {
+	vec4 ambient, specular, diffuse;
+	float shininess;
+
 	window_width = width;
 	window_height = height;
 
@@ -29,24 +32,32 @@ Scene::Scene(int width, int height)
 	track_field.current_y = 0;
 	track_field.angle = 0.0;
 
-	transform = Translate(0.0, 0.0, 0.0);
-
-	vec4 ambient(0.3, 0.3, 0.3, 1.0);
-	vec4 specular(1.0, 0.0, 0.0, 1.0);
-	vec4 diffuse(0.4, 0.0, 0.0, 1.0);
-	float shininess = 100.0;
+	ambient = vec4(0.4, 0.4, 0.4, 1.0);
+	specular = vec4(1.0, 0.0, 0.0, 1.0);
+	diffuse= vec4(0.4, 0.0, 0.0, 1.0);
+	shininess = 100.0;
 	cube.set_lighting(ambient, diffuse, specular, shininess);
+	cube.init();
+	cube_transform = Translate(0.0, 0.0, 0.0);
+
+	ambient = vec4(0.4, 0.4, 0.4, 1.0);
+	specular = vec4(1.0, 0.0, 0.0, 1.0);
+	diffuse= vec4(0.4, 0.0, 0.0, 1.0);
+	shininess = 100.0;
+	plane.set_lighting(ambient, diffuse, specular, shininess);
+	plane.init();
+	plane_transform = Translate(0.0, -0.5, 0.0);
 
 	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
 	vec4 at(0.0, 0.0, 0.0, 1.0);
 	vec4 up(0.0, 1.0, 0.0, 0.0);
 	camera.set_model_view(eye, at, up);*/
 
-	camera.set_model_view(Translate(0.0, 0.0, -2.0));
+	camera.set_model_view(Translate(0.0, 0.0, -8.0));
 	camera.set_projection(45.0, width/(float)height, 0.1, 100.0);
 
 	//Lighting properties
-	light_position_field = vec4(0.0, 0.0, 8.0, 0.0);
+	light_position_field = vec4(0.0, 10.0, 10.0, 0.0);
 	light_diffuse_field = vec4(1.0, 1.0, 1.0, 1.0);
 	light_specular_field = vec4(1.0, 1.0, 1.0, 1.0);
 	light_ambient_field = vec4(0.4, 0.4, 0.4, 1.0);
@@ -100,7 +111,10 @@ void Scene::load_objects()
 				 Geometry::NUM_NORMALS*sizeof(vec3), NULL, GL_STATIC_DRAW);
 
 	cube.SEND_FLAG = true;
-	cube.init();
+	cube.load();
+
+	plane.SEND_FLAG = true;
+	plane.load();
 }
 
 void Scene::draw_objects()
@@ -120,9 +134,21 @@ void Scene::draw_objects()
 	glUniform4fv(ambient_product_loc, 1, ambient_product);
 	glUniform4fv(diffuse_product_loc, 1, diffuse_product);
 	glUniform4fv(specular_product_loc, 1, specular_product);
-	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, transform);
+	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, cube_transform);
 	glUniform1f(shininess_loc, cube.shininess());	
 	cube.draw();
+
+	//Lighting for the plane
+	ambient_product = light_ambient_field * plane.ambient();
+	diffuse_product = light_diffuse_field *  plane.diffuse();
+	specular_product = light_specular_field * plane.specular();
+
+	glUniform4fv(ambient_product_loc, 1, ambient_product);
+	glUniform4fv(diffuse_product_loc, 1, diffuse_product);
+	glUniform4fv(specular_product_loc, 1, specular_product);
+	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, plane_transform);
+	glUniform1f(shininess_loc, plane.shininess());	
+	plane.draw();
 }
 
 //https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
@@ -181,7 +207,7 @@ void Scene::idle_move_trackball()
 		vec3 axis = cross(p1, p2);
 		track_field.angle += angle;
 		camera.set_model_view(Translate(0.0, 0.0, -8.0) * rotationMatrix(axis,track_field.angle));
-		std::cout << "Idle function is running...\n";
+		//std::cout << "Idle function is running...\n";
 	}
 }
 
