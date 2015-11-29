@@ -32,7 +32,7 @@ class Cube : public Geometry
 {
 	public:
 		static const int SIZE;			//Number of vertices
-		static const vec4 VERTICES[];   //Vertices of unit cube
+		static vec4 VERTICES[];   		//Vertices of unit cube
 		static int BUFFER_PLOC;			//Place of vertices in buffer
 		static int BUFFER_NLOC;			//NUM_POINTS*sizeof(vecc4) + this for location of normals
 		static bool INIT_DATA;			//Data initiated once

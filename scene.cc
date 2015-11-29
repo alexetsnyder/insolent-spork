@@ -189,7 +189,7 @@ vec3 Scene::get_trackball_vector(int x, int y)
 
 void Scene::idle_move_trackball()
 {
-	if (track_field.last_x != track_field.current_x &&
+	/*if (track_field.last_x != track_field.current_x &&
 		track_field.last_y != track_field.current_y)
 	{
 		vec3 p1 = get_trackball_vector(track_field.last_x, track_field.last_y);
@@ -199,7 +199,7 @@ void Scene::idle_move_trackball()
 		track_field.angle += angle;
 		camera.set_model_view(Translate(0.0, 0.0, -8.0) * rotationMatrix(axis,track_field.angle));
 		//std::cout << "Idle function is running...\n";
-	}
+	}*/
 }
 
 //http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
