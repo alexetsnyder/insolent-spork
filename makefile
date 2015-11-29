@@ -2,7 +2,7 @@
 include C:\Users\library\Makefile.defs
 #include /home/cs425/code-egs/Makefile.defs 
 
-OBJECTS = main.o scene.o geometry.o cube.o camera.o plane.o
+OBJECTS = main.o scene.o geometry.o cube.o camera.o plane.o mymatrix.o
 
 all: bsur clean
 
@@ -27,5 +27,8 @@ camera.o: camera.h camera.cc
 plane.o: plane.h plane.cc
 	$(CC) -c $(OPTIONS) plane.cc
 
+mymatrix.o: mymatrix.h mymatrix.cc
+	$(CC) -c $(OPTIONS) mymatrix.cc
+
 clean:
-	rm *.o
+	rm *.o #*~

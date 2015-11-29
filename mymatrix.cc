@@ -17,36 +17,44 @@
 
 #include "mymatrix.h"
 
+mat4 inverse(mat4 matrix)
+{
+    double m[16], I[16];
+    mat4 inverse;
+
+    convert_mat4_to_array(matrix, m);
+    gluInvertMatrix(m, I);
+    convert_array_to_mat4(I, inverse);
+
+    return inverse;
+}
+
 void convert_mat4_to_array(const mat4& matrix, double m[16])
 {
-    double new_matrix[16];
     int index = 0;
 
     for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 4; ++j)
       {
-        new_matrix[index] = matrix[i][j];
+        m[index] = matrix[i][j];
         ++index;
       }
     }
-    return new_matrix;
 }
 
 void convert_array_to_mat4(const double m[16], mat4& matrix)
 {
-    mat4 new_matrix;
     int index = 0;
 
     for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 4; ++j)
       {
-        new_matrix[i][j] = m[index];
+        matrix[i][j] = m[index];
         ++index;
       }
     }
-    return new_matrix;
 }
 
 //http://www.gamedev.net/topic/648190-algorithm-for-4x4-matrix-inverse/
