@@ -38,15 +38,9 @@ Scene::Scene(int width, int height)
 	shininess = 100.0;
 	cube.set_lighting(ambient, diffuse, specular, shininess);
 	cube.init();
-	cube_transform = Translate(0.0, 0.0, 0.0);
+	cube_transform = Translate(0.0, 0.0, 0.5);
 
-	ambient = vec4(0.4, 0.4, 0.4, 1.0);
-	specular = vec4(1.0, 0.0, 0.0, 1.0);
-	diffuse= vec4(0.4, 0.0, 0.0, 1.0);
-	shininess = 100.0;
-	plane.set_lighting(ambient, diffuse, specular, shininess);
-	plane.init();
-	plane_transform = Translate(0.0, -0.5, 0.0);
+	ground.init(10, 10);
 
 	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
 	vec4 at(0.0, 0.0, 0.0, 1.0);
@@ -113,8 +107,7 @@ void Scene::load_objects()
 	cube.SEND_FLAG = true;
 	cube.load();
 
-	plane.SEND_FLAG = true;
-	plane.load();
+	ground.load();
 }
 
 void Scene::draw_objects()
@@ -138,17 +131,10 @@ void Scene::draw_objects()
 	glUniform1f(shininess_loc, cube.shininess());	
 	cube.draw();
 
-	//Lighting for the plane
-	ambient_product = light_ambient_field * plane.ambient();
-	diffuse_product = light_diffuse_field *  plane.diffuse();
-	specular_product = light_specular_field * plane.specular();
-
-	glUniform4fv(ambient_product_loc, 1, ambient_product);
-	glUniform4fv(diffuse_product_loc, 1, diffuse_product);
-	glUniform4fv(specular_product_loc, 1, specular_product);
-	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, plane_transform);
-	glUniform1f(shininess_loc, plane.shininess());	
-	plane.draw();
+	//Draw the ground
+	ground.draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
+				object_mv_loc, shininess_loc, 
+				light_ambient_field, light_diffuse_field, light_specular_field);
 }
 
 //https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball

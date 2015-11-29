@@ -26,7 +26,7 @@
 #include "Angel.h"
 #include "camera.h"
 #include "cube.h"
-#include "plane.h"
+#include "ground.h"
 
 struct track_ball
 {
@@ -65,8 +65,7 @@ class Scene
 		Cube cube;
 		mat4 cube_transform;
 
-		Plane plane;
-		mat4 plane_transform;
+		Ground ground;					//The ground to walk on
 
 		int window_width;				//the window width
 		int window_height;				//the window height
