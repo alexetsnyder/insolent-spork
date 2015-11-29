@@ -2,39 +2,43 @@
 //                                                                    
 //  Program:     Basic Survival Game                                     
 //      
-//	File:		 ground.h
+//	File:		 raycast.h
 //                                                               
 //  Author:      Alex Snyder
 //  Email:       as828110@ohio.edu
 //                                                                    
 //  Class: CS4250: Interactive Graphics with Dr. Chelberg
 //                                                                    
-//  Description: A object that creates the ground out of planes      
+//  Description: An object that creates a ray from the mouse
+//				 mouse coordinates into the screen.   
 //                                                                    
 //  Date:        Dec 9, 2015
 //                                                                    
 //*******************************************************************
 
-#ifndef GROUND_OBJECT_CLASS
-#define GROUND_OBJECT_CLASS
+#ifndef RAY_CAST_CLASS
+#define RAY_CAST_CLASS
 
-#include <vector>
-#include "plane.h"
+#include "Angel.h"
+#include "mymatrix.h"
 
-class Ground //: public Object
+class RayCast
 {
 	public:
-		void init(int width, int length);
-		void load();
-		void draw(GLuint ambient_loc, GLuint diffuse_loc, GLuint specular_loc,
-				  GLuint object_mv_loc, GLuint shininess_loc,
-				  vec4 light_ambient, vec4 light_diffuse, vec4 light_specular);
+		RayCast();
+
+		//Casts a ray from the camera into the world depending on 
+		//where the mouse clicks on the screen
+		void cast_ray(int x, int y, float window_width, float window_height,
+					  mat4 camera_mv, mat4 projection);
+
+		//Getter returns the ray
+		vec4 ray() {return ray_field;}
 
 	private:
-		std::vector<Plane> planes;		//Need one plane geometry
-		std::vector<mat4> transforms;	//The objects transforms 
-		int width_field;				//The width
-		int length_field;				//The length
+		vec4 ray_field;				//Holds the ray
+		mat4 camera_mv_field;		//Camera model view matrix
+		mat4 projection_field;		//The projection matrix
 };
 
 #endif

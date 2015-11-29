@@ -2,39 +2,41 @@
 //                                                                    
 //  Program:     Basic Survival Game                                     
 //      
-//	File:		 ground.h
+//	File:		 raycast.cc
 //                                                               
 //  Author:      Alex Snyder
 //  Email:       as828110@ohio.edu
 //                                                                    
 //  Class: CS4250: Interactive Graphics with Dr. Chelberg
 //                                                                    
-//  Description: A object that creates the ground out of planes      
+//  Description: An object that creates a ray from the mouse
+//				 mouse coordinates into the screen.   
 //                                                                    
 //  Date:        Dec 9, 2015
 //                                                                    
 //*******************************************************************
 
-#ifndef GROUND_OBJECT_CLASS
-#define GROUND_OBJECT_CLASS
+#include "raycast.h"
 
-#include <vector>
-#include "plane.h"
-
-class Ground //: public Object
+RayCast::RayCast()
 {
-	public:
-		void init(int width, int length);
-		void load();
-		void draw(GLuint ambient_loc, GLuint diffuse_loc, GLuint specular_loc,
-				  GLuint object_mv_loc, GLuint shininess_loc,
-				  vec4 light_ambient, vec4 light_diffuse, vec4 light_specular);
+	//Nothing
+}
 
-	private:
-		std::vector<Plane> planes;		//Need one plane geometry
-		std::vector<mat4> transforms;	//The objects transforms 
-		int width_field;				//The width
-		int length_field;				//The length
-};
+void RayCast::cast_ray(int x, int y, float window_width, float window_height,
+					   mat4 camera_mv, mat4 projection)
+{
+	//Normalized Device Coordinates
+	float xd = (2.0f * x) / window_width - 1.0f;
+	float yd = 1.0f - (2.0f * y) / window_height;
 
-#endif
+	vec4 ray_clip(xd, yd, -1.0, 1.0);
+
+	//Eye coordinates
+	vec4 ray_eye = inverse(projection) * ray_clip;
+	ray_eye = vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+
+	//World coordinates
+	ray_field = inverse(camera_mv) * ray_eye;
+	ray_field = normalize(ray_field);
+}

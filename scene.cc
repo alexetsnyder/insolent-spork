@@ -38,7 +38,7 @@ Scene::Scene(int width, int height)
 	shininess = 100.0;
 	cube.set_lighting(ambient, diffuse, specular, shininess);
 	cube.init();
-	cube_transform = Translate(0.0, 0.0, 0.5);
+	cube_transform = Translate(0.0, 0.0, 0.1);
 
 	ground.init(10, 10);
 
@@ -152,9 +152,14 @@ void Scene::mouse_click(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		track_field.track_ball_on = true;
+		ray_cast.cast_ray(x, y, window_width, window_height, 
+						  camera.get_model_view(), camera.get_projection());
+
+		std::cout << "ray = " << ray_cast.ray() << std::endl;
+
+		/*track_field.track_ball_on = true;
 		track_field.last_x = track_field.current_x = x;
-		track_field.last_y = track_field.current_y = y;
+		track_field.last_y = track_field.current_y = y;*/
 	}
 	else
 	{

@@ -17,7 +17,6 @@
 #include <cstdlib>
 #include <time.h>
 #include "scene.h"
-#include "mymatrix.h"
 
 //The class that controls the game.
 Scene scene(800, 800);

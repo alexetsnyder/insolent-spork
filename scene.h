@@ -27,6 +27,7 @@
 #include "camera.h"
 #include "cube.h"
 #include "ground.h"
+#include "raycast.h"
 
 struct track_ball
 {
@@ -64,6 +65,8 @@ class Scene
 
 		Cube cube;
 		mat4 cube_transform;
+
+		RayCast ray_cast;				//The ray for selection
 
 		Ground ground;					//The ground to walk on
 
