@@ -152,14 +152,17 @@ void Scene::mouse_click(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		ray_cast.cast_ray(x, y, window_width, window_height, 
-						  camera.get_model_view(), camera.get_projection());
+		vec4 ray = cast_ray(x, y, window_width, window_height, 
+						  	camera.get_model_view(), camera.get_projection())
 
-		std::cout << "ray = " << ray_cast.ray() << std::endl;
+		std::cout << "ray = " << ray << std::endl;
 
-		/*track_field.track_ball_on = true;
+		//if (ray_intersect_plane(vec4(0.0, 0.0, 0.0, 1.0), Normal, Origin of ray, 
+								  //ray, intersect_point))
+
+		track_field.track_ball_on = true;
 		track_field.last_x = track_field.current_x = x;
-		track_field.last_y = track_field.current_y = y;*/
+		track_field.last_y = track_field.current_y = y;
 	}
 	else
 	{
@@ -189,17 +192,18 @@ vec3 Scene::get_trackball_vector(int x, int y)
 
 void Scene::idle_move_trackball()
 {
-	/*if (track_field.last_x != track_field.current_x &&
-		track_field.last_y != track_field.current_y)
+	if (track_field.last_x != track_field.current_x &&
+		track_field.last_y != track_field.current_y &&
+		track_field.track_ball_on)
 	{
 		vec3 p1 = get_trackball_vector(track_field.last_x, track_field.last_y);
 		vec3 p2 = get_trackball_vector(track_field.current_x, track_field.current_y);
 		float angle = -acos(std::min(1.0f, (float)dot(p1, p2)));
 		vec3 axis = cross(p1, p2);
-		track_field.angle += angle;
-		camera.set_model_view(Translate(0.0, 0.0, -8.0) * rotationMatrix(axis,track_field.angle));
+		camera.set_model_view(camera.get_model_view() * rotationMatrix(axis, 0.01*angle));
 		//std::cout << "Idle function is running...\n";
-	}*/
+	}
+
 }
 
 //http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/

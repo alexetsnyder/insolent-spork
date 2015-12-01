@@ -18,12 +18,12 @@
 
 #include "raycast.h"
 
-RayCast::RayCast()
+/*RayCast::RayCast()
 {
 	//Nothing
 }
-
-void RayCast::cast_ray(int x, int y, float window_width, float window_height,
+*/
+vec4 cast_ray(int x, int y, float window_width, float window_height,
 					   mat4 camera_mv, mat4 projection)
 {
 	//Normalized Device Coordinates
@@ -37,6 +37,21 @@ void RayCast::cast_ray(int x, int y, float window_width, float window_height,
 	ray_eye = vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
 
 	//World coordinates
-	ray_field = inverse(camera_mv) * ray_eye;
-	ray_field = normalize(ray_field);
+	vec4 ray_world = inverse(camera_mv) * ray_eye;
+	//std::cout << "before norm = " << ray_field << std::endl;
+	ray_world = normalize(ray_world);
+
+	return ray_world;
+}
+
+bool ray_intersect_plane(vec4& P0, vec4& N, vec4& I0, vec4& I, vec4 intersect_point)
+{
+	float d = dot(I, N);
+	if (d > 1e-6)
+	{
+		float t = dot((P0 - I0), N) / d;
+		intersect_point = (t >= 0) ? I0 + t*I : vec4(0.0, 0.0, 0.0, 0.0);
+		return (t >= 0);
+	}
+	return false;
 }

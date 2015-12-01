@@ -1,6 +1,6 @@
 #Makefile for the 3D Roller Coaster project
-#include C:\Users\library\Makefile.defs
-include /home/cs425/code-egs/Makefile.defs 
+include C:\Users\library\Makefile.defs
+#include /home/cs425/code-egs/Makefile.defs 
 
 OBJECTS = main.o scene.o geometry.o cube.o camera.o plane.o mymatrix.o ground.o
 OBJECTS += raycast.o
@@ -38,4 +38,4 @@ raycast.o: raycast.h raycast.cc
 	$(CC) -c $(OPTIONS) raycast.cc
 
 clean:
-	rm *.o *~
+	rm *.o #*~

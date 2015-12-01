@@ -23,8 +23,7 @@ bool Cube::POINTS_SENT = false;
 int Cube::BUFFER_PLOC = 0;
 int Cube::BUFFER_NLOC = 0;
 cube_data Cube::DATA;
-vec4 Cube::VERTICES[8];
-/* = {
+vec4 Cube::VERTICES[8] = {
 			vec4(-0.5, -0.5,  0.5, 1.0),
 			vec4(-0.5,  0.5,  0.5, 1.0),
 			vec4( 0.5,  0.5,  0.5, 1.0),
@@ -33,7 +32,7 @@ vec4 Cube::VERTICES[8];
 			vec4(-0.5,  0.5, -0.5, 1.0),
 			vec4( 0.5,  0.5, -0.5, 1.0),
 			vec4( 0.5, -0.5, -0.5, 1.0)
-		};*/
+		};
 
 
 Cube::Cube()
@@ -43,16 +42,14 @@ Cube::Cube()
 
 void Cube::init()
 {
-	VERTICES[0] = vec4(-0.5, -0.5,  0.5, 1.0);
+	/*VERTICES[0] = vec4(-0.5, -0.5,  0.5, 1.0);
 	VERTICES[1] = vec4(-0.5,  0.5,  0.5, 1.0);
 	VERTICES[2] = vec4( 0.5,  0.5,  0.5, 1.0);
 	VERTICES[3] = vec4( 0.5, -0.5,  0.5, 1.0);
 	VERTICES[4] = vec4(-0.5, -0.5, -0.5, 1.0);
 	VERTICES[5] = vec4(-0.5,  0.5, -0.5, 1.0);
 	VERTICES[6] = vec4( 0.5,  0.5, -0.5, 1.0);
-	VERTICES[7] = vec4( 0.5, -0.5, -0.5, 1.0);
-
-
+	VERTICES[7] = vec4( 0.5, -0.5, -0.5, 1.0);*/
 
 	if (!INIT_DATA)
 	{
@@ -64,8 +61,8 @@ void Cube::init()
 		BUFFER_PLOC = NUM_POINTS;
 		NUM_POINTS += SIZE;
 
-		for (int i = 0; i < SIZE; ++i)
-			std::cout << DATA.points[i] << std::endl;
+		/*for (int i = 0; i < SIZE; ++i)
+			std::cout << DATA.points[i] << std::endl;*/
 
 		INIT_DATA = true;
 	}

@@ -66,8 +66,6 @@ class Scene
 		Cube cube;
 		mat4 cube_transform;
 
-		RayCast ray_cast;				//The ray for selection
-
 		Ground ground;					//The ground to walk on
 
 		int window_width;				//the window width
