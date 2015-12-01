@@ -52,6 +52,7 @@ class Scene
 
 		//Callback functions
 		void reshape(int width, int height);
+		void mouse_motion(int x, int y);
 		//Virtual Trackball functions
 		void motion_func(int x, int y);
 		void mouse_click(int button, int state, int x, int y);

@@ -34,6 +34,7 @@ class Camera
 		mat4 get_projection();
 
 		//Getter and Setters
+		vec4 position();
 		vec4& eye() {look_at=true; return eye_field;}
 		vec4& at() {look_at=true; return at_field;}
 		vec4& up() {look_at=true; return up_field;}

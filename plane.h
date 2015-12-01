@@ -45,6 +45,8 @@ class Plane : public Geometry
 		void load();		//Send verticies to gpu
 		void draw();		//Draw the object.
 
+		vec3 get_normal(){return DATA.normals[0];}
+
 	private:
 		void create_vertices();
 		void rectangle(int i, int j, int k, int l);

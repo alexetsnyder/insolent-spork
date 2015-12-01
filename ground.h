@@ -30,6 +30,8 @@ class Ground //: public Object
 				  GLuint object_mv_loc, GLuint shininess_loc,
 				  vec4 light_ambient, vec4 light_diffuse, vec4 light_specular);
 
+		vec3 get_normal(){return planes[0].get_normal();}
+
 	private:
 		std::vector<Plane> planes;		//Need one plane geometry
 		std::vector<mat4> transforms;	//The objects transforms 

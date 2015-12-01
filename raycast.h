@@ -29,6 +29,6 @@ vec4 cast_ray(int x, int y, float window_width, float window_height,
 
 //Determines whether a ray intersects with a plane and 
 //if it does puts the point of intersection in intersect_point
-bool ray_intersect_plane(vec4& P0, vec4& N, vec4& I0, vec4& I, vec4 intersect_point);
+bool ray_intersect_plane(vec4& P0, vec4& N, vec4& I0, vec4& I, vec4& intersect_point);
 
 #endif

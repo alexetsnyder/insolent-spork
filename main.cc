@@ -60,6 +60,11 @@ extern "C" void idle()
 	glutPostRedisplay();
 }
 
+extern "C" void mouse_motion(int x, int y)
+{
+	scene.mouse_motion(x, y);
+}
+
 //Display function for glut callback display
 extern "C" void display()
 {
@@ -92,6 +97,7 @@ int main(int argc, char** argv)
 	//glutKeyboardFunc(keyboard);
 	glutIdleFunc(idle);
 	glutMotionFunc(motion_func);
+	glutPassiveMotionFunc(mouse_motion);
 	glutMouseFunc(mouse_click);
 	glutDisplayFunc(display);
 

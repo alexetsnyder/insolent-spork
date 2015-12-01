@@ -34,7 +34,7 @@ vec4 cast_ray(int x, int y, float window_width, float window_height,
 
 	//Eye coordinates
 	vec4 ray_eye = inverse(projection) * ray_clip;
-	ray_eye = vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+	ray_eye = vec4(ray_eye.x, ray_eye.y, 1.0, 0.0);
 
 	//World coordinates
 	vec4 ray_world = inverse(camera_mv) * ray_eye;
@@ -44,14 +44,18 @@ vec4 cast_ray(int x, int y, float window_width, float window_height,
 	return ray_world;
 }
 
-bool ray_intersect_plane(vec4& P0, vec4& N, vec4& I0, vec4& I, vec4 intersect_point)
+bool ray_intersect_plane(vec4& P0, vec4& N, vec4& I0, vec4& I, vec4& intersect_point)
 {
 	float d = dot(I, N);
 	if (d > 1e-6)
 	{
 		float t = dot((P0 - I0), N) / d;
-		intersect_point = (t >= 0) ? I0 + t*I : vec4(0.0, 0.0, 0.0, 0.0);
-		return (t >= 0);
+		if (t >= 0)
+		{
+			intersect_point = I0 + t*I;
+			return true;
+		}
+		return false;
 	}
 	return false;
 }

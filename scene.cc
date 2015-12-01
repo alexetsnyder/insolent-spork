@@ -47,7 +47,8 @@ Scene::Scene(int width, int height)
 	vec4 up(0.0, 1.0, 0.0, 0.0);
 	camera.set_model_view(eye, at, up);*/
 
-	camera.set_model_view(Translate(0.0, 0.0, -8.0));
+	camera.set_model_view(Translate(0.0, 0.0, -15.0));
+	std::cout << "model_view = " << camera.get_model_view() << std::endl;
 	camera.set_projection(45.0, width/(float)height, 0.1, 100.0);
 
 	//Lighting properties
@@ -137,6 +138,26 @@ void Scene::draw_objects()
 				light_ambient_field, light_diffuse_field, light_specular_field);
 }
 
+void Scene::mouse_motion(int x, int y)
+{
+	vec4 ray = cast_ray(x, y, window_width, window_height, 
+						  	camera.get_model_view(), camera.get_projection());
+
+	//std::cout << "ray = " << ray << std::endl;
+
+	vec4 intersect_point;
+	vec4 ground_normal = ground.get_normal();
+	ground_normal.w = 0.0;
+	vec4 plane_p0(0.0, 0.0, 0.0, 1.0);
+	vec4 camera_pos = camera.position();
+	if (ray_intersect_plane(plane_p0, ground_normal, 
+							    camera_pos, ray, intersect_point))
+	{
+		cube_transform = Translate(intersect_point);
+	}
+	glutPostRedisplay();
+}
+
 //https://en.wikibooks.org/wiki/OpenGL_Programming/Modern_OpenGL_Tutorial_Arcball
 //http://web.cse.ohio-state.edu/~hwshen/781/Site/Slides_files/trackball.pdf
 void Scene::motion_func(int x, int y)
@@ -152,14 +173,6 @@ void Scene::mouse_click(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		vec4 ray = cast_ray(x, y, window_width, window_height, 
-						  	camera.get_model_view(), camera.get_projection())
-
-		std::cout << "ray = " << ray << std::endl;
-
-		//if (ray_intersect_plane(vec4(0.0, 0.0, 0.0, 1.0), Normal, Origin of ray, 
-								  //ray, intersect_point))
-
 		track_field.track_ball_on = true;
 		track_field.last_x = track_field.current_x = x;
 		track_field.last_y = track_field.current_y = y;

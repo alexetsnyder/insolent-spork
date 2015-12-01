@@ -60,6 +60,11 @@ mat4 Camera::get_model_view()
 	return model_view_field;
 }
 
+vec4 Camera::position()
+{
+	return vec4(model_view_field[0][3], model_view_field[1][3], model_view_field[2][3], 1.0);
+}
+
 void Camera::set_projection(float fovy, float aspect, float zNear, float zFar)
 {
 	fovy_field = fovy;
