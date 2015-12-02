@@ -58,11 +58,13 @@ class Scene
 		void mouse_click(int button, int state, int x, int y);
 		vec3 get_trackball_vector(int x, int y);
 		void idle_move_trackball();
-		/*void keyboard(unsigned char key, int x, int y);*/
+		void keyboard(unsigned char key, int x, int y);
 
 	private:
 		Camera camera;				    //The camera
 		track_ball track_field;			//The virtual trackball
+
+		bool follow_mouse;
 
 		Cube cube;
 		mat4 cube_transform;
