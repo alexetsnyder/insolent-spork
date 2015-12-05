@@ -44,6 +44,7 @@ void Camera::set_model_view(vec4 eye, vec4 at, vec4 up)
 
 void Camera::set_model_view(mat4 model_view)
 {
+	look_at = false;
 	model_view_field = model_view;
 }
 		

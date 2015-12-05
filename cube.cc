@@ -72,7 +72,7 @@ void Cube::load()
 {
 	if (!POINTS_SENT && SEND_FLAG)
 	{
-		std::cout << "PLOC = " << BUFFER_PLOC << " NLOC = " << BUFFER_NLOC << std::endl;
+		//std::cout << "PLOC = " << BUFFER_PLOC << " NLOC = " << BUFFER_NLOC << std::endl;
 		
 		glBufferSubData(GL_ARRAY_BUFFER, BUFFER_PLOC * sizeof(vec4),
 		 				sizeof(DATA.points), DATA.points);

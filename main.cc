@@ -52,11 +52,11 @@ extern "C" void reshape(int width, int height)
 
 extern "C" void idle()
 {
-	static GLint time = glutGet(GLUT_ELAPSED_TIME);
+	//static GLint time = glutGet(GLUT_ELAPSED_TIME);
 
 	scene.idle_move_trackball();
 
-	time = glutGet(GLUT_ELAPSED_TIME);
+	//time = glutGet(GLUT_ELAPSED_TIME);
 	glutPostRedisplay();
 }
 

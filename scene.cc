@@ -19,6 +19,10 @@
 
 Scene::Scene(int width, int height)
 {
+	previous = vec2(2.0, 2.0);
+
+	current_tree = 0;
+
 	window_width = width;
 	window_height = height;
 
@@ -31,19 +35,24 @@ Scene::Scene(int width, int height)
 
 	follow_mouse = true;
 	first_person = false;
+	place_object = true;
 
 	player.init(1.5, 1.5, 1.5);
-	player.move_to(vec3(0.0, 0.0, 0.21));
+	player.move_to(vec3(2.0, 2.0, 0.21));
 
 	ground.init(50, 50);
+	Tree tree;
+	trees.push_back(tree);
+	trees[0].init();
+
 
 	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
 	vec4 at(0.0, 0.0, 0.0, 1.0);
 	vec4 up(0.0, 1.0, 0.0, 0.0);
 	camera.set_model_view(eye, at, up);*/
 
-	camera.set_model_view(Translate(0.0, 0.0, -15.0));
-	std::cout << "model_view = " << camera.get_model_view() << std::endl;
+	camera.set_model_view(Translate(0.0, 0.0, -44.0));
+	//std::cout << "model_view = " << camera.get_model_view() << std::endl;
 	camera.set_projection(45.0, width/(float)height, 0.1, 100.0);
 
 	//Lighting properties
@@ -101,14 +110,12 @@ void Scene::load_objects()
 				 Geometry::NUM_NORMALS*sizeof(vec3), NULL, GL_STATIC_DRAW);
 
 	player.load();
-
 	ground.load();
+	trees[0].load();
 }
 
 void Scene::draw_objects()
 {
-	vec4 ambient_product, diffuse_product, specular_product;
-
 	//Camera and light positiong
 	glUniformMatrix4fv(camera_mv_loc, 1, GL_TRUE, camera.get_model_view());
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, camera.get_projection());
@@ -123,12 +130,19 @@ void Scene::draw_objects()
 	ground.draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
 				object_mv_loc, shininess_loc, 
 				light_ambient_field, light_diffuse_field, light_specular_field);
+
+	//Draw all trees
+	for (size_t i = 0; i < trees.size(); ++i)
+	{
+		trees[i].draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
+				  	  object_mv_loc, shininess_loc, 
+			  		  light_ambient_field, light_diffuse_field, light_specular_field);
+	}
 }
 
 void Scene::mouse_motion(int x, int y)
 {
-
-	if (follow_mouse)
+	if (follow_mouse && place_object)
 	{
 		vec4 ray = cast_ray(x, y, window_width, window_height, 
 						  	camera.get_model_view(), camera.get_projection());
@@ -143,9 +157,25 @@ void Scene::mouse_motion(int x, int y)
 		if (ray_intersect_plane(plane_p0, ground_normal, 
 							    camera_pos, ray, intersect_point))
 		{
-			player.move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
+			trees[current_tree].move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
 		}
 		glutPostRedisplay();
+	}
+	else if (first_person)
+	{
+		float xd = (2.0f * x) / window_width - 1.0f;
+		float yd = 1.0f - (2.0f * y) / window_height;
+
+		if (previous.x == 2.0 || previous.y == 2.0)
+			previous = vec2(xd, yd);
+
+		vec2 look = previous - vec2(xd, yd);
+
+		camera.at().z -= look.y;
+
+		camera.at() = RotateZ(10*look.x) * camera.at();
+
+		previous = vec2(xd, yd);
 	}
 }
 
@@ -164,11 +194,16 @@ void Scene::mouse_click(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		follow_mouse = false;
-
-		track_field.track_ball_on = true;
-		track_field.last_x = track_field.current_x = x;
-		track_field.last_y = track_field.current_y = y;
+		if (follow_mouse && place_object)
+		{
+			place_object = false;
+		}
+		else if (!first_person)
+		{
+			track_field.track_ball_on = true;
+			track_field.last_x = track_field.current_x = x;
+			track_field.last_y = track_field.current_y = y;
+		}
 	}
 	else
 	{
@@ -217,15 +252,43 @@ void Scene::idle_move_trackball()
 
 void Scene::keyboard(unsigned char key, int x, int y)
 {
+	vec4 eye, up, at;
+	Tree tree;
+
 	switch(key)
 	{
 		case 'c':
-			camera.set_model_view(Translate(0.0, 0.0, -15.0));
+			camera.set_model_view(Translate(0.0, 0.0, -44.0));
 			follow_mouse = true;
+			first_person = false;
 			glutPostRedisplay();
 			break;
 		case 'v':
 			first_person = true;
+			follow_mouse = false;
+			eye = player.position();
+			eye.w = 1.0;
+			eye.x += 1.0;
+			at = vec4(eye.x + 5.0, eye.y, eye.z, 1.0);
+			up = vec4(0.0, 0.0, 1.0, 0.0);
+			camera.set_model_view(eye, at, up);
+			glutPostRedisplay();
+			break;
+		case 'b':
+			first_person = false;
+			follow_mouse = false;
+			camera.set_model_view(Translate(0.0, 0.0, -44.0));
+			glutPostRedisplay();
+			break;
+
+		case 't':
+			if (follow_mouse)
+			{
+				tree.init();
+				trees.push_back(tree);
+				++current_tree;
+				place_object = true;
+			}
 			break;
 
 		case 'w': 
@@ -239,6 +302,21 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			break;
 		case 'd':
 			player.move_to_position(vec3(1.0, 0.0, 0.0));
+			break;
+
+		case 'z':
+			if (follow_mouse)
+			{
+				camera.set_model_view(camera.get_model_view() * Translate(0.0, 0.0, 1.0));
+				//std::cout << "z = " << camera.get_model_view()[2][3] << std::endl;
+			}
+			break;
+		case 'x':
+			if (follow_mouse)
+			{
+				camera.set_model_view(camera.get_model_view() * Translate(0.0, 0.0, -1.0));
+				//std::cout << "z = " << camera.get_model_view()[2][3] << std::endl;
+			}
 			break;
 
 		case 033:

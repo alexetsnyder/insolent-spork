@@ -23,12 +23,14 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <vector>
 #include "Angel.h"
 #include "mymatrix.h"
 #include "camera.h"
 #include "ground.h"
 #include "raycast.h"
 #include "player.h"
+#include "tree.h"
 
 struct track_ball
 {
@@ -67,9 +69,14 @@ class Scene
 
 		bool follow_mouse;				//Should objects follow the mouse
 		bool first_person;				//Toggle first person camera
+		bool place_object;				//Are you placing an item currently
+		vec2 previous;					//previous 2D point of mouse
 
 		Player player;					//The player object
 		Ground ground;					//The ground to walk on
+		//Tree tree;					//A tree object
+		std::vector<Tree> trees;		//A lot of trees
+		int current_tree;				//Current tree to place
 
 		int window_width;				//the window width
 		int window_height;				//the window height

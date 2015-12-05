@@ -2,29 +2,30 @@
 //                                                                    
 //  Program:     Basic Survival Game                                     
 //      
-//	File:		 player.h
+//	File:		 tree.h
 //                                                               
 //  Author:      Alex Snyder
 //  Email:       as828110@ohio.edu
 //                                                                    
 //  Class: CS4250: Interactive Graphics with Dr. Chelberg
 //                                                                    
-//  Description: A object that creates a player object  
+//  Description: A object that creates a tree geometry on 
+//				 the screen.
 //                                                                    
 //  Date:        Dec 9, 2015
 //                                                                    
 //*******************************************************************
 
-#ifndef PLAYER_OBJECT_CLASS
-#define PLAYER_OBJECT_CLASS
+#ifndef TREE_OBJECT_CLASS
+#define TREE_OBJECT_CLASS
 
 #include "Angel.h"
 #include "cube.h"
 
-class Player //: public Object
+class Tree //: public Object
 {
 	public:
-		void init(float width, float height, float length);
+		void init();
 		void load();
 		void draw(GLuint ambient_loc, GLuint diffuse_loc, GLuint specular_loc,
 				  GLuint object_mv_loc, GLuint shininess_loc,
@@ -36,12 +37,11 @@ class Player //: public Object
 		vec3 position() {return position_field;}
 
 	private:
-		Cube cube;						//The object that represents the player
-		mat4 transform_field;			//Scale and move player
-		vec3 position_field;			//The players position in the world
-		float width_field;				//The width of the cube
-		float height_field;				//The height of the cube
-		float length_field;				//The length of the cube
+		Cube leafs;						//The top of the tree
+		mat4 leafs_transform_field;		//Scale and move tree
+		Cube trunk;						//The bottom of the tree
+		mat4 trunk_transform_field;		//Scale and move tree
+		vec3 position_field;			//The tree position in the world
 };
 
 #endif
