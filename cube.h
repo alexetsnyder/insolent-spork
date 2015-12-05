@@ -23,7 +23,7 @@
 
 struct cube_data
 {
-	int index;			//Index to fill points and normals
+	int index;				//Index to fill points and normals
 	vec4 points[24];		//The vertex info sent to GPU
 	vec3 normals[24];		//The normal info sent to GPU
 };

@@ -29,6 +29,11 @@ mat4 inverse(mat4 matrix)
     return inverse;
 }
 
+mat4 rotation(vec3 axis, float angle)
+{
+    return rotationMatrix(axis, angle);
+}
+
 void convert_mat4_to_array(const mat4& matrix, double m[16])
 {
     int index = 0;
@@ -56,6 +61,22 @@ void convert_array_to_mat4(const double m[16], mat4& matrix)
       }
     }
 }
+
+//http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
+//Not made by me, On blog by Neil Mendoza
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+    
+    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+                0.0,                                0.0,                                0.0,                                1.0);
+}
+//End of copied code
 
 //http://www.gamedev.net/topic/648190-algorithm-for-4x4-matrix-inverse/
 //glu inverse matrix function found online

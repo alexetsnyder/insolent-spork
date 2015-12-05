@@ -24,10 +24,11 @@
 #include <algorithm>
 #include <math.h>
 #include "Angel.h"
+#include "mymatrix.h"
 #include "camera.h"
-#include "cube.h"
 #include "ground.h"
 #include "raycast.h"
+#include "player.h"
 
 struct track_ball
 {
@@ -64,11 +65,10 @@ class Scene
 		Camera camera;				    //The camera
 		track_ball track_field;			//The virtual trackball
 
-		bool follow_mouse;
+		bool follow_mouse;				//Should objects follow the mouse
+		bool first_person;				//Toggle first person camera
 
-		Cube cube;
-		mat4 cube_transform;
-
+		Player player;					//The player object
 		Ground ground;					//The ground to walk on
 
 		int window_width;				//the window width
@@ -95,9 +95,5 @@ class Scene
 		GLuint loc;						//Location of vao
 		GLuint normal_loc;				//Location of Normals in vao
 };
-
-//http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
-//Not made by me, On blog by Neil Mendoza
-mat4 rotationMatrix(vec3 axis, float angle);
 
 #endif

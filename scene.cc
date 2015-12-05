@@ -19,9 +19,6 @@
 
 Scene::Scene(int width, int height)
 {
-	vec4 ambient, specular, diffuse;
-	float shininess;
-
 	window_width = width;
 	window_height = height;
 
@@ -33,16 +30,12 @@ Scene::Scene(int width, int height)
 	track_field.angle = 0.0;
 
 	follow_mouse = true;
+	first_person = false;
 
-	ambient = vec4(0.4, 0.4, 0.4, 1.0);
-	specular = vec4(1.0, 0.0, 0.0, 1.0);
-	diffuse= vec4(0.4, 0.0, 0.0, 1.0);
-	shininess = 100.0;
-	cube.set_lighting(ambient, diffuse, specular, shininess);
-	cube.init();
-	cube_transform = Translate(0.0, 0.0, 0.1);
+	player.init(1.5, 1.5, 1.5);
+	player.move_to(vec3(0.0, 0.0, 0.21));
 
-	ground.init(10, 10);
+	ground.init(50, 50);
 
 	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
 	vec4 at(0.0, 0.0, 0.0, 1.0);
@@ -107,8 +100,7 @@ void Scene::load_objects()
 	glBufferData(GL_ARRAY_BUFFER, Geometry::NUM_POINTS*sizeof(vec4) + 
 				 Geometry::NUM_NORMALS*sizeof(vec3), NULL, GL_STATIC_DRAW);
 
-	cube.SEND_FLAG = true;
-	cube.load();
+	player.load();
 
 	ground.load();
 }
@@ -122,19 +114,12 @@ void Scene::draw_objects()
 	glUniformMatrix4fv(projection_loc, 1, GL_TRUE, camera.get_projection());
 	glUniform4fv(light_position_loc, 1, light_position_field);
 
-	//Lighting for cube
-	ambient_product = light_ambient_field * cube.ambient();
-	diffuse_product = light_diffuse_field *  cube.diffuse();
-	specular_product = light_specular_field * cube.specular();
+	//Draw the player in the scene
+	player.draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
+				object_mv_loc, shininess_loc, 
+				light_ambient_field, light_diffuse_field, light_specular_field);
 
-	glUniform4fv(ambient_product_loc, 1, ambient_product);
-	glUniform4fv(diffuse_product_loc, 1, diffuse_product);
-	glUniform4fv(specular_product_loc, 1, specular_product);
-	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, cube_transform);
-	glUniform1f(shininess_loc, cube.shininess());	
-	cube.draw();
-
-	//Draw the ground
+	//Draw the ground in the scene
 	ground.draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
 				object_mv_loc, shininess_loc, 
 				light_ambient_field, light_diffuse_field, light_specular_field);
@@ -158,7 +143,7 @@ void Scene::mouse_motion(int x, int y)
 		if (ray_intersect_plane(plane_p0, ground_normal, 
 							    camera_pos, ray, intersect_point))
 		{
-			cube_transform = Translate(intersect_point);
+			player.move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
 		}
 		glutPostRedisplay();
 	}
@@ -221,27 +206,14 @@ void Scene::idle_move_trackball()
 		vec3 p2 = get_trackball_vector(track_field.current_x, track_field.current_y);
 		float angle = -acos(std::min(1.0f, (float)dot(p1, p2)));
 		vec3 axis = cross(p1, p2);
-		camera.set_model_view(camera.get_model_view() * rotationMatrix(axis, 0.01*angle));
+		//std::cout << Translate(0.0, 0.0, 15.0) * camera.get_model_view() << std::endl;
+		//camera.set_model_view(Translate(0.0, 0.0, 15.0) * camera.get_model_view());
+		camera.set_model_view(camera.get_model_view() * rotation(axis, 0.1*angle));
+		//camera.set_model_view(Translate(0.0, 0.0, -15.0) * camera.get_model_view());
 		//std::cout << "Idle function is running...\n";
 	}
 
 }
-
-//http://www.neilmendoza.com/glsl-rotation-about-an-arbitrary-axis/
-//Not made by me, On blog by Neil Mendoza
-mat4 rotationMatrix(vec3 axis, float angle)
-{
-    axis = normalize(axis);
-    float s = sin(angle);
-    float c = cos(angle);
-    float oc = 1.0 - c;
-    
-    return mat4(oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
-                oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
-                oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
-                0.0,                                0.0,                                0.0,                                1.0);
-}
-//End of copied code
 
 void Scene::keyboard(unsigned char key, int x, int y)
 {
@@ -251,6 +223,22 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			camera.set_model_view(Translate(0.0, 0.0, -15.0));
 			follow_mouse = true;
 			glutPostRedisplay();
+			break;
+		case 'v':
+			first_person = true;
+			break;
+
+		case 'w': 
+			player.move_to_position(vec3(0.0, 1.0, 0.0));
+			break;
+		case 's': 
+			player.move_to_position(vec3(0.0, -1.0, 0.0));
+			break;
+		case 'a': 
+			player.move_to_position(vec3(-1.0, 0.0, 0.0));
+			break;
+		case 'd':
+			player.move_to_position(vec3(1.0, 0.0, 0.0));
 			break;
 
 		case 033:

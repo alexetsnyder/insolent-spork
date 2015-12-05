@@ -26,9 +26,9 @@ void Ground::init(int width, int length)
 	length_field = length;
 
 	ambient = vec4(0.4, 0.4, 0.4, 1.0);
-	specular = vec4(0.0, 4.0, 0.0, 1.0);
+	specular = vec4(0.0, 2.0, 0.0, 1.0);
 	diffuse= vec4(0.0, 1.0, 0.0, 1.0);
-	shininess = 50.0;
+	shininess = 25.0;
 
 	for (int i = 0; i < width*length; ++i)
 	{
