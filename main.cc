@@ -1,6 +1,6 @@
 //******************************************************************* 
 //                                                                    
-//  Program:     3D Roller Coaster                                       
+//  Program:     3D Survival Game                                      
 //      
 //	File:		 main.cc
 //                                                               
@@ -11,7 +11,7 @@
 //                                                                    
 //  Description: Where program starts             
 //                                                                    
-//  Date:        November 9, 2015
+//  Date:       December 9, 2015
 //                                                                    
 //*******************************************************************
 #include <cstdlib>
@@ -28,6 +28,32 @@ void init()
 	
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.53, 0.80, 0.92, 1.0);	
+}
+
+extern "C" void menu(int value)
+{
+	//Called when click on menu
+	switch (value)
+	{
+		case 1:
+			std::cout << "First Message\n";
+			break;
+		case 2:
+			std::cout << "Second Message\n";
+			break;
+		case 3:
+			std::cout << "Third Message\n";
+			break;
+	}
+}
+
+void create_menu()
+{
+	glutCreateMenu(menu);
+	glutAddMenuEntry("Words to Display.", 1);
+	glutAddMenuEntry("More words", 2);
+	glutAddMenuEntry("Even more words", 3);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 extern "C" void motion_func(int x, int y)
@@ -91,6 +117,7 @@ int main(int argc, char** argv)
 
 	//Basic initializing.
 	init();
+	create_menu();
 
 	//Glut callback functions
     glutReshapeFunc(reshape); 
@@ -99,6 +126,7 @@ int main(int argc, char** argv)
 	glutMotionFunc(motion_func);
 	glutPassiveMotionFunc(mouse_motion);
 	glutMouseFunc(mouse_click);
+	//glutMenuStateFunc(menu);
 	glutDisplayFunc(display);
 
 	glutMainLoop();

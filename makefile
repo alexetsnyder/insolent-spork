@@ -3,7 +3,7 @@ include C:\Users\library\Makefile.defs
 #include /home/cs425/code-egs/Makefile.defs 
 
 OBJECTS = main.o scene.o geometry.o cube.o camera.o plane.o mymatrix.o ground.o
-OBJECTS += raycast.o player.o tree.o
+OBJECTS += raycast.o player.o tree.o collision.o
 
 all: bsur clean
 
@@ -42,6 +42,9 @@ player.o: player.h player.cc
 
 tree.o: tree.h tree.cc
 	$(CC) -c $(OPTIONS) tree.cc
+
+collision.o: collision.h collision.cc
+	$(CC) -c $(OPTIONS) collision.cc
 
 clean:
 	rm *.o #*~

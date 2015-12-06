@@ -31,13 +31,13 @@
 #include "raycast.h"
 #include "player.h"
 #include "tree.h"
+#include "collision.h"
 
 struct track_ball
 {
 	bool track_ball_on;
 	int last_x, last_y;
 	int current_x, current_y;
-	float angle;
 };
 
 class Scene
@@ -53,15 +53,16 @@ class Scene
 		//Draw all the objects on the screen.
 		void draw_objects();
 
-		//Callback functions
+		//CALLBACK FUNCTIONS
 		void reshape(int width, int height);
 		void mouse_motion(int x, int y);
+		void keyboard(unsigned char key, int x, int y);
+
 		//Virtual Trackball functions
 		void motion_func(int x, int y);
 		void mouse_click(int button, int state, int x, int y);
 		vec3 get_trackball_vector(int x, int y);
 		void idle_move_trackball();
-		void keyboard(unsigned char key, int x, int y);
 
 	private:
 		Camera camera;				    //The camera

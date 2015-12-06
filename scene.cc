@@ -31,7 +31,6 @@ Scene::Scene(int width, int height)
 	track_field.last_y = 0;
 	track_field.current_x = 0;
 	track_field.current_y = 0;
-	track_field.angle = 0.0;
 
 	follow_mouse = true;
 	first_person = false;
@@ -157,21 +156,23 @@ void Scene::mouse_motion(int x, int y)
 	}
 	else if (first_person)
 	{
-		float xd = (2.0f * x) / window_width - 1.0f;
-		float yd = 1.0f - (2.0f * y) / window_height;
+		/*float xd = (2.0f * x) / window_width - 1.0f;
+		float yd = 1.0f - (2.0f * y) / window_height;*/
+
+		y = window_height - y;
 
 		if (previous.x == 2.0 || previous.y == 2.0)
-			previous = vec2(xd, yd);
+			previous = vec2(x, y);
 
-		vec2 look = previous - vec2(xd, yd);
+		vec2 look = previous - vec2(x, y);
 
-		camera.at().z -= 2*look.y;
+		//camera.at().z -= 0.001*look.y;
 
 		//std::cout << 200*look.x << std::endl;
 
-		camera.at() = RotateZ(200*look.x) * camera.at();
+		camera.at() = RotateZ(look.x) * camera.at();
 
-		previous = vec2(xd, yd);
+		previous = vec2(x, y);
 	}
 }
 
@@ -194,7 +195,7 @@ void Scene::mouse_click(int button, int state, int x, int y)
 		{
 			place_object = false;
 		}
-		else if (!first_person)
+		else if (!first_person && !follow_mouse)
 		{
 			track_field.track_ball_on = true;
 			track_field.last_x = track_field.current_x = x;
@@ -237,13 +238,8 @@ void Scene::idle_move_trackball()
 		vec3 p2 = get_trackball_vector(track_field.current_x, track_field.current_y);
 		float angle = -acos(std::min(1.0f, (float)dot(p1, p2)));
 		vec3 axis = cross(p1, p2);
-		//std::cout << Translate(0.0, 0.0, 15.0) * camera.get_model_view() << std::endl;
-		//camera.set_model_view(Translate(0.0, 0.0, 15.0) * camera.get_model_view());
 		camera.set_model_view(camera.get_model_view() * rotation(axis, 0.1*angle));
-		//camera.set_model_view(Translate(0.0, 0.0, -15.0) * camera.get_model_view());
-		//std::cout << "Idle function is running...\n";
 	}
-
 }
 
 void Scene::keyboard(unsigned char key, int x, int y)
@@ -253,6 +249,20 @@ void Scene::keyboard(unsigned char key, int x, int y)
 
 	switch(key)
 	{
+		case 'e':
+			if (first_person)
+			{
+				for (size_t i = 0; i < trees.size(); ++i)
+				{
+					vec3 cam_pos(camera.eye().x, camera.eye().y, camera.eye().z);
+					if (within_range(cam_pos, trees[i].position(), 2.0))
+					{
+						std::cout << "Tree. Tree. Tree...\n";
+					}
+				}
+			}
+			break;
+
 		case 'c':
 			player.set_visible();
 			camera.set_model_view(Translate(0.0, 0.0, -44.0));
@@ -294,7 +304,6 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			if(first_person)
 			{
 				camera.move_at(Camera::FORWARD);
-				previous = vec2(2.0, 2.0);
 			}
 			else
 			{
@@ -305,7 +314,6 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			if(first_person)
 			{
 				camera.move_at(Camera::BACKWARDS);
-				previous = vec2(2.0, 2.0);
 			}
 			else
 			{
@@ -316,7 +324,6 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			if(first_person)
 			{
 				camera.move_at(Camera::LEFT);
-				previous = vec2(2.0, 2.0);
 			}
 			else
 			{
@@ -327,7 +334,6 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			if(first_person)
 			{
 				camera.move_at(Camera::RIGHT);
-				previous = vec2(2.0, 2.0);
 			}
 			else
 			{
