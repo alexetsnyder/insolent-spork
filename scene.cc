@@ -45,12 +45,6 @@ Scene::Scene(int width, int height)
 	trees.push_back(tree);
 	trees[0].init();
 
-
-	/*vec4 eye(0.0, 0.0, 8.0, 1.0);
-	vec4 at(0.0, 0.0, 0.0, 1.0);
-	vec4 up(0.0, 1.0, 0.0, 0.0);
-	camera.set_model_view(eye, at, up);*/
-
 	camera.set_model_view(Translate(0.0, 0.0, -44.0));
 	//std::cout << "model_view = " << camera.get_model_view() << std::endl;
 	camera.set_projection(45.0, width/(float)height, 0.1, 100.0);
@@ -171,9 +165,11 @@ void Scene::mouse_motion(int x, int y)
 
 		vec2 look = previous - vec2(xd, yd);
 
-		camera.at().z -= look.y;
+		camera.at().z -= 2*look.y;
 
-		camera.at() = RotateZ(10*look.x) * camera.at();
+		//std::cout << 200*look.x << std::endl;
+
+		camera.at() = RotateZ(200*look.x) * camera.at();
 
 		previous = vec2(xd, yd);
 	}
@@ -258,23 +254,26 @@ void Scene::keyboard(unsigned char key, int x, int y)
 	switch(key)
 	{
 		case 'c':
+			player.set_visible();
 			camera.set_model_view(Translate(0.0, 0.0, -44.0));
 			follow_mouse = true;
 			first_person = false;
 			glutPostRedisplay();
 			break;
 		case 'v':
+			player.set_invisible();
 			first_person = true;
 			follow_mouse = false;
 			eye = player.position();
 			eye.w = 1.0;
 			eye.x += 1.0;
-			at = vec4(eye.x + 5.0, eye.y, eye.z, 1.0);
+			at = vec4(eye.x, eye.y, eye.z, 1.0);
 			up = vec4(0.0, 0.0, 1.0, 0.0);
 			camera.set_model_view(eye, at, up);
 			glutPostRedisplay();
 			break;
 		case 'b':
+			player.set_visible();
 			first_person = false;
 			follow_mouse = false;
 			camera.set_model_view(Translate(0.0, 0.0, -44.0));
@@ -292,16 +291,48 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			break;
 
 		case 'w': 
-			player.move_to_position(vec3(0.0, 1.0, 0.0));
+			if(first_person)
+			{
+				camera.move_at(Camera::FORWARD);
+				previous = vec2(2.0, 2.0);
+			}
+			else
+			{
+				player.move_to_position(vec3(0.0, 1.0, 0.0));
+			}
 			break;
 		case 's': 
-			player.move_to_position(vec3(0.0, -1.0, 0.0));
+			if(first_person)
+			{
+				camera.move_at(Camera::BACKWARDS);
+				previous = vec2(2.0, 2.0);
+			}
+			else
+			{
+				player.move_to_position(vec3(0.0, -1.0, 0.0));
+			}
 			break;
 		case 'a': 
-			player.move_to_position(vec3(-1.0, 0.0, 0.0));
+			if(first_person)
+			{
+				camera.move_at(Camera::LEFT);
+				previous = vec2(2.0, 2.0);
+			}
+			else
+			{
+				player.move_to_position(vec3(-1.0, 0.0, 0.0));
+			}
 			break;
 		case 'd':
-			player.move_to_position(vec3(1.0, 0.0, 0.0));
+			if(first_person)
+			{
+				camera.move_at(Camera::RIGHT);
+				previous = vec2(2.0, 2.0);
+			}
+			else
+			{
+				player.move_to_position(vec3(1.0, 0.0, 0.0));
+			}
 			break;
 
 		case 'z':

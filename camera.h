@@ -23,6 +23,8 @@
 class Camera
 {
 	public:
+		enum moves {FORWARD, BACKWARDS, LEFT, RIGHT};
+
 		Camera();			//Constructer
 
 		void set_model_view(vec4 eye, vec4 at, vec4 up);
@@ -32,6 +34,9 @@ class Camera
 
 		void set_projection(float fovy, float aspect, float zNear, float zFar);
 		mat4 get_projection();
+
+		void move_at(moves move);
+		void move_towards(vec3 movement);
 
 		//Getter and Setters
 		vec4 position();
@@ -46,6 +51,8 @@ class Camera
 	private:
 		mat4 model_view_field;	//The model view matrix
 		bool look_at;			//Use look_at
+
+		float speed;			//Spead that camera moves
 
 		vec4 eye_field;			//Where the view is
 		vec4 at_field;			//Where viewer is looking at

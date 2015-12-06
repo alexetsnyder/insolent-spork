@@ -19,6 +19,8 @@
 
 void Player::init(float width, float height, float length)
 {
+	hide_field = false;
+
 	cube.init();
 	transform_field = Translate(0.0, 0.0, 0.0) * Scale(width, height, length);
 	position_field = vec3(0.0, 0.0, 0.0);
@@ -43,16 +45,19 @@ void Player::draw(GLuint ambient_loc, GLuint diffuse_loc, GLuint specular_loc,
 		  GLuint object_mv_loc, GLuint shininess_loc,
 		  vec4 light_ambient, vec4 light_diffuse, vec4 light_specular)
 {
-	vec4 ambient_product = light_ambient * cube.ambient();
-	vec4 diffuse_product = light_diffuse *  cube.diffuse();
-	vec4 specular_product = light_specular * cube.specular();
+	if (!hide_field)
+	{
+		vec4 ambient_product = light_ambient * cube.ambient();
+		vec4 diffuse_product = light_diffuse *  cube.diffuse();
+		vec4 specular_product = light_specular * cube.specular();
 
-	glUniform4fv(ambient_loc, 1, ambient_product);
-	glUniform4fv(diffuse_loc, 1, diffuse_product);
-	glUniform4fv(specular_loc, 1, specular_product);
-	glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, transform_field);
-	glUniform1f(shininess_loc, cube.shininess());	
-	cube.draw();
+		glUniform4fv(ambient_loc, 1, ambient_product);
+		glUniform4fv(diffuse_loc, 1, diffuse_product);
+		glUniform4fv(specular_loc, 1, specular_product);
+		glUniformMatrix4fv(object_mv_loc, 1, GL_TRUE, transform_field);
+		glUniform1f(shininess_loc, cube.shininess());	
+		cube.draw();
+	}
 }
 
 void Player::move_to(vec3 position)

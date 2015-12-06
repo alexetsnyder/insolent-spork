@@ -28,6 +28,8 @@ Camera::Camera()
 	zNear_field = 0.5;
 	zFar_field = 10.0;
 
+	speed = 0.08;
+
 	look_at = false;
 }
 
@@ -77,4 +79,38 @@ void Camera::set_projection(float fovy, float aspect, float zNear, float zFar)
 mat4 Camera::get_projection()
 {
 	return Perspective(fovy_field, aspect_field, zNear_field, zFar_field);
+}
+
+void Camera::move_at(moves move)
+{
+	vec4 movement = at_field - eye_field;
+
+	if (move == FORWARD)
+	{
+		move_towards(speed*vec3(movement.x, movement.y, movement.z));
+	}
+	else if (move == BACKWARDS)
+	{
+		move_towards(speed*vec3(-movement.x, -movement.y, movement.z));
+	}
+	else if (move == LEFT)
+	{
+		vec4 perp = cross(up_field, movement);
+
+		move_towards(speed*vec3(perp.x, perp.y, perp.z));
+	}
+	else 
+	{
+		vec4 perp = cross(movement, up_field);
+
+		move_towards(speed*vec3(perp.x, perp.y, perp.z));
+	}
+}
+
+void Camera::move_towards(vec3 movement)
+{
+	eye_field.x += movement.x;
+	at_field.x += movement.x;
+	eye_field.y += movement.y;
+	at_field.y += movement.y;
 }
