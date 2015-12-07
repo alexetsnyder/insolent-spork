@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <math.h>
 #include <vector>
+#include <sstream>
 #include "Angel.h"
 #include "mymatrix.h"
 #include "camera.h"
@@ -32,6 +33,7 @@
 #include "player.h"
 #include "tree.h"
 #include "collision.h"
+#include "rock.h"
 
 struct track_ball
 {
@@ -43,6 +45,8 @@ struct track_ball
 class Scene
 {
 	public:
+		enum items {LOGS, LEAFS, ROCKS, HUT};
+
 		Scene(int width, int height);
 
 		void init(std::string vshader, std::string fshader, std::string position);
@@ -64,6 +68,9 @@ class Scene
 		vec3 get_trackball_vector(int x, int y);
 		void idle_move_trackball();
 
+		//menu callbacks
+		void create_crafting_menu();
+
 	private:
 		Camera camera;				    //The camera
 		track_ball track_field;			//The virtual trackball
@@ -71,6 +78,8 @@ class Scene
 		bool follow_mouse;				//Should objects follow the mouse
 		bool first_person;				//Toggle first person camera
 		bool place_object;				//Are you placing an item currently
+		bool place_tree;
+		bool place_rock;
 		vec2 previous;					//previous 2D point of mouse
 
 		Player player;					//The player object
@@ -78,6 +87,12 @@ class Scene
 		//Tree tree;					//A tree object
 		std::vector<Tree> trees;		//A lot of trees
 		int current_tree;				//Current tree to place
+		std::vector<Rock> rocks;		//A lot of rocks
+		int current_rock;
+
+		int logs;
+		int leafs;
+		int stones;
 
 		int window_width;				//the window width
 		int window_height;				//the window height
@@ -103,5 +118,7 @@ class Scene
 		GLuint loc;						//Location of vao
 		GLuint normal_loc;				//Location of Normals in vao
 };
+
+std::string to_string(int a);
 
 #endif

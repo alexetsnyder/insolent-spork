@@ -32,27 +32,38 @@ void init()
 
 extern "C" void menu(int value)
 {
-	//Called when click on menu
 	switch (value)
 	{
-		case 1:
-			std::cout << "First Message\n";
+		case Scene::LOGS:
+			std::cout << "Place logs\n";
 			break;
-		case 2:
-			std::cout << "Second Message\n";
+		case Scene::LEAFS:
+			std::cout << "Place leafs\n";
 			break;
-		case 3:
-			std::cout << "Third Message\n";
+		case Scene::ROCKS:
+			std::cout << "Place Stone\n";
 			break;
+		case Scene::HUT:
+			std::cout << "Craft Hut\n";
+			break;
+		default:
+			std::cout << "Other\n";
 	}
+
 }
 
 void create_menu()
 {
+	//std::cout << glutGetMenu() << std::endl;
+	/*if (glutGetMenu() != 0)
+	{
+		glutDestroyMenu(glutGetMenu());
+	}*/
 	glutCreateMenu(menu);
-	glutAddMenuEntry("Words to Display.", 1);
-	glutAddMenuEntry("More words", 2);
-	glutAddMenuEntry("Even more words", 3);
+	glutAddMenuEntry("Crafting Menu:", -1);
+
+	scene.create_crafting_menu();
+
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -69,6 +80,9 @@ extern "C" void mouse_click(int button, int state, int x, int y)
 extern "C" void keyboard(unsigned char key, int x, int y)
 {
 	scene.keyboard(key, x, y);
+
+	if (key == 'v' || key == 'e')
+		create_menu();
 }
 
 extern "C" void reshape(int width, int height)
@@ -117,7 +131,7 @@ int main(int argc, char** argv)
 
 	//Basic initializing.
 	init();
-	create_menu();
+	//create_menu();
 
 	//Glut callback functions
     glutReshapeFunc(reshape); 

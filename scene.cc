@@ -21,7 +21,12 @@ Scene::Scene(int width, int height)
 {
 	previous = vec2(2.0, 2.0);
 
-	current_tree = 0;
+	current_tree = -1;
+	current_rock = -1;
+
+	logs = 0;
+	leafs = 0;
+	stones = 0;
 
 	window_width = width;
 	window_height = height;
@@ -34,15 +39,22 @@ Scene::Scene(int width, int height)
 
 	follow_mouse = true;
 	first_person = false;
-	place_object = true;
+	place_object = false;
+	place_tree = false;
+	place_rock = false;
+
 
 	player.init(1.5, 1.5, 1.5);
 	player.move_to(vec3(2.0, 2.0, 0.21));
 
 	ground.init(50, 50);
-	Tree tree;
+	/*Tree tree;
 	trees.push_back(tree);
 	trees[0].init();
+
+	Rock rock;
+	rocks.push_back(rock);
+	rock[0].init();*/
 
 	camera.set_model_view(Translate(0.0, 0.0, -44.0));
 	//std::cout << "model_view = " << camera.get_model_view() << std::endl;
@@ -104,7 +116,7 @@ void Scene::load_objects()
 
 	player.load();
 	ground.load();
-	trees[0].load();
+	//trees[0].load();
 }
 
 void Scene::draw_objects()
@@ -131,6 +143,14 @@ void Scene::draw_objects()
 				  	  object_mv_loc, shininess_loc, 
 			  		  light_ambient_field, light_diffuse_field, light_specular_field);
 	}
+
+	//Draw all rocks
+	for (size_t i = 0; i < rocks.size(); ++i)
+	{
+		rocks[i].draw(ambient_product_loc, diffuse_product_loc, specular_product_loc,
+				  	  object_mv_loc, shininess_loc, 
+			  		  light_ambient_field, light_diffuse_field, light_specular_field);
+	}
 }
 
 void Scene::mouse_motion(int x, int y)
@@ -150,7 +170,14 @@ void Scene::mouse_motion(int x, int y)
 		if (ray_intersect_plane(plane_p0, ground_normal, 
 							    camera_pos, ray, intersect_point))
 		{
-			trees[current_tree].move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
+			if (place_tree)
+			{
+				trees[current_tree].move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
+			}
+			else
+			{
+				rocks[current_rock].move_to(vec3(intersect_point.x, intersect_point.y, intersect_point.z));
+			}
 		}
 		glutPostRedisplay();
 	}
@@ -194,6 +221,8 @@ void Scene::mouse_click(int button, int state, int x, int y)
 		if (follow_mouse && place_object)
 		{
 			place_object = false;
+			place_tree = false;
+			place_rock = false;
 		}
 		else if (!first_person && !follow_mouse)
 		{
@@ -246,18 +275,35 @@ void Scene::keyboard(unsigned char key, int x, int y)
 {
 	vec4 eye, up, at;
 	Tree tree;
+	Rock rock;
 
 	switch(key)
 	{
 		case 'e':
 			if (first_person)
 			{
-				for (size_t i = 0; i < trees.size(); ++i)
+				std::vector<Tree>::iterator it;
+				for (it = trees.begin(); it < trees.end(); ++it)
 				{
 					vec3 cam_pos(camera.eye().x, camera.eye().y, camera.eye().z);
-					if (within_range(cam_pos, trees[i].position(), 2.0))
+					if (within_range(cam_pos, it->position(), 3.0))
 					{
-						std::cout << "Tree. Tree. Tree...\n";
+						//std::cout << "Tree. Tree. Tree...\n";
+						trees.erase(it);
+						++logs; ++leafs;
+						--current_tree;
+						//create_crafting_menu();
+					}
+				}
+				std::vector<Rock>::iterator it2;
+				for (it2 = rocks.begin(); it2 < rocks.end(); ++it2)
+				{
+					vec3 cam_pos(camera.eye().x, camera.eye().y, camera.eye().z);
+					if (within_range(cam_pos, it2->position(), 3.0))
+					{
+						rocks.erase(it2);
+						stones += rand() % 10;
+						--current_rock;
 					}
 				}
 			}
@@ -271,13 +317,15 @@ void Scene::keyboard(unsigned char key, int x, int y)
 			glutPostRedisplay();
 			break;
 		case 'v':
+			create_crafting_menu();
 			player.set_invisible();
 			first_person = true;
 			follow_mouse = false;
 			eye = player.position();
+			eye.z += 0.5;
 			eye.w = 1.0;
-			eye.x += 1.0;
-			at = vec4(eye.x, eye.y, eye.z, 1.0);
+			at = vec4(eye.x + 2.0, eye.y, eye.z, 1.0);
+			at.z += 0.5;
 			up = vec4(0.0, 0.0, 1.0, 0.0);
 			camera.set_model_view(eye, at, up);
 			glutPostRedisplay();
@@ -293,10 +341,27 @@ void Scene::keyboard(unsigned char key, int x, int y)
 		case 't':
 			if (follow_mouse)
 			{
+				if (current_tree == -1)
+					current_tree = 0;
+				else
+					++current_tree;
 				tree.init();
 				trees.push_back(tree);
-				++current_tree;
 				place_object = true;
+				place_tree = true;
+			}
+			break;
+		case 'r':
+			if (follow_mouse)
+			{
+				if (current_rock == -1)
+					current_rock = 0;
+				else
+					++current_rock;
+				rock.init();
+				rocks.push_back(rock);
+				place_object = true;
+				place_rock = true;
 			}
 			break;
 
@@ -379,4 +444,34 @@ void Scene::reshape(int width, int height)
 
 	//Redisplay 
 	glutPostRedisplay();
+}
+
+void Scene::create_crafting_menu()
+{
+	if (logs > 0)
+	{
+		std::string s = "Log " + to_string(logs);
+		glutAddMenuEntry(s.c_str(), LOGS);
+	}
+	if (leafs > 0)
+	{
+		std::string s = "Leafs " + to_string(leafs);
+		glutAddMenuEntry(s.c_str(), LEAFS);
+	}
+	if (stones > 0)
+	{
+		std::string s = "Stones " + to_string(stones);
+		glutAddMenuEntry(s.c_str(), ROCKS);
+	}
+	if (logs >= 2 && leafs > 0)
+	{
+		glutAddMenuEntry("Hut", HUT);
+	}
+}
+
+std::string to_string(int a)
+{
+	std::stringstream ss;
+	ss << a;
+	return ss.str();
 }
