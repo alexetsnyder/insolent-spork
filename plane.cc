@@ -54,6 +54,7 @@ void Plane::init()
 
 void Plane::load()
 {
+	init();
 	if (!POINTS_SENT && SEND_FLAG)
 	{
 		//std::cout << "PLOC = " << BUFFER_PLOC << " NLOC = " << BUFFER_NLOC << std::endl;
